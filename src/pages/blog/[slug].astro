@@ -1,0 +1,548 @@
+---
+/**
+ * 文章详情页模板 — 封面图 + 文艺排版 + 功能组件
+ *
+ * 功能清单:
+ *   1. 阅读进度条 — 页面顶部极细蓝色线，随滚动从 0% 到 100%
+ *   2. 浮动目录 — 桌面端右侧悬浮 h2 标题锚点，点击跳转对应段落
+ *   3. 上一篇/下一篇 — 文章底部左右箭头导航，保持阅读连贯
+ *   4. 文内图片放大 — 点击正文图片弹出全屏查看，深色遮罩 + ESC 关闭
+ *
+ * 后续扩展:
+ *   - 中间插入图片: 直接在 .md 里用 ![描述](图片路径) 即可，本模板已支持
+ *   - 后台管理: 计划通过 Netlify CMS (public/admin/) 在线编辑 .md 文件
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import FloatingButtons from '../../components/FloatingButtons.astro';
+import Snow from '../../components/Snow.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, desc, date, tag, color, img } = post.data;
+const { Content } = await render(post);
+
+// 获取相邻文章（按日期排序）
+const allPosts = (await getCollection('blog'))
+  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+const currentIdx = allPosts.findIndex(p => p.slug === post.slug);
+const prevPost = currentIdx > 0 ? allPosts[currentIdx - 1] : null;
+const nextPost = currentIdx < allPosts.length - 1 ? allPosts[currentIdx + 1] : null;
+---
+
+<BaseLayout title={`${title} - 懒得取名`}>
+  <Snow />
+  <Header />
+
+  <!-- 阅读进度条 — 颜色跟随文章标签 -->
+  <div class="read-progress" id="read-progress" style={`background: linear-gradient(to right, ${color || '#0040ff'}, ${color || '#0040ff'}cc)`}></div>
+
+  <article class="post">
+    <!-- 顶图 — 标题叠加在图片左下 -->
+    <div class="post-hero" style={img ? `background-image:url(${img})` : `background:${color || '#1a1a2e'}`}>
+      <div class="post-hero-inner">
+        <h1 class="post-title">{title}</h1>
+        <div class="post-meta">
+          <span class="post-tag" style={`background:${color||'#0040ff'}`}>{tag}</span>
+          <time class="post-date">{date}</time>
+          <span class="post-author">True Blue</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 正文 — 带浮动目录锚点 -->
+    <div class="post-layout">
+      <!-- 浮动目录（桌面端） -->
+      <aside class="post-toc" id="post-toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list" id="toc-list"></div>
+      </aside>
+
+      <!-- 内容区 -->
+      <div class="post-body" id="post-body">
+        <Content />
+      </div>
+    </div>
+
+    <!-- 上一篇 / 下一篇 -->
+    <nav class="post-nav">
+      {prevPost ? (
+        <a href={'/blog/' + prevPost.slug} class="post-nav-link prev">
+          <span class="nav-label"><i class="fas fa-arrow-left"></i> 上一篇</span>
+          <span class="nav-title">{prevPost.data.title}</span>
+        </a>
+      ) : <span class="post-nav-link prev empty" />}
+
+      {nextPost ? (
+        <a href={'/blog/' + nextPost.slug} class="post-nav-link next">
+          <span class="nav-label">下一篇 <i class="fas fa-arrow-right"></i></span>
+          <span class="nav-title">{nextPost.data.title}</span>
+        </a>
+      ) : <span class="post-nav-link next empty" />}
+    </nav>
+
+    <!-- 底部 -->
+    <div class="post-end">
+      <a href="/blog#blog-content" class="post-return">
+        <i class="fas fa-arrow-left"></i> 返回文章列表
+      </a>
+    </div>
+  </article>
+
+  <!-- 图片灯箱 -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close"><i class="fas fa-times"></i></button>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+
+  <Footer />
+  <FloatingButtons />
+</BaseLayout>
+
+<script>
+  /**
+   * [1] 阅读进度条
+   * 监听窗口滚动，计算文档已读百分比，驱动顶部 #read-progress 线条宽度
+   */
+  (function () {
+    var bar = document.getElementById('read-progress');
+    if (!bar) return;
+    window.addEventListener('scroll', function () {
+      var docH = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+      bar.style.width = Math.min(pct, 100) + '%';
+    }, { passive: true });
+  })();
+
+  /**
+   * [2] 浮动目录 — 从正文 h2 提取标题，渲染右侧锚点列表
+   */
+  (function () {
+    var toc = document.getElementById('post-toc');
+    var list = document.getElementById('toc-list');
+    if (!toc || !list) return;
+    var headings = document.querySelectorAll('.post-body h2');
+    if (headings.length < 2) { toc.style.display = 'none'; return; }
+
+    headings.forEach(function (h, i) {
+      var id = 'section-' + i;
+      h.id = id;
+      var a = document.createElement('a');
+      a.href = '#' + id;
+      a.className = 'toc-link';
+      a.textContent = h.textContent;
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        h.scrollIntoView({ behavior: 'smooth' });
+      });
+      list.appendChild(a);
+    });
+
+    // 滚动高亮当前章节
+    var links = list.querySelectorAll('.toc-link');
+    window.addEventListener('scroll', function () {
+      var current = '';
+      headings.forEach(function (h) {
+        if (h.getBoundingClientRect().top < 120) current = h.id;
+      });
+      links.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }, { passive: true });
+  })();
+
+  /**
+   * [3] 文内图片灯箱 — 点击正文 img 全屏放大
+   */
+  (function () {
+    var box = document.getElementById('lightbox');
+    var boxImg = document.getElementById('lightbox-img');
+    var closeBtn = document.getElementById('lightbox-close');
+    if (!box || !boxImg) return;
+
+    // 委托点击事件到 .post-body 内的所有图片
+    document.getElementById('post-body').addEventListener('click', function (e) {
+      var img = e.target.closest('img');
+      if (!img) return;
+      boxImg.src = img.src;
+      boxImg.alt = img.alt;
+      box.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeLightbox() {
+      box.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    box.addEventListener('click', function (e) {
+      if (e.target === box) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  })();
+</script>
+
+<style>
+  /* ========================================================================
+     0. 基础重置 — 文章页隐藏 Header 装饰区（波浪/头像/logo）
+     ======================================================================== */
+  :global(.theme-header-decor) { display: none !important; }
+
+  /* ========================================================================
+     1. 阅读进度条
+     ======================================================================== */
+  :global(.read-progress) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    z-index: 10000;
+    width: 0%;
+    transition: width 0.12s linear;
+    pointer-events: none;
+  }
+
+  /* ========================================================================
+     2. 顶图
+     ======================================================================== */
+  .post-hero {
+    width: 100%;
+    height: 42vh;
+    min-height: 280px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .post-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .post-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 28px 32px;
+  }
+
+  .post-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 850;
+    line-height: 1.18;
+    letter-spacing: -0.6px;
+    color: #fff;
+    margin-bottom: 14px;
+    text-align: left;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .post-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+  .post-tag {
+    display: inline-block; padding: 3px 12px; border-radius: 10px;
+    color: #fff; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  .post-date, .post-author {
+    font-size: 0.82rem; color: rgba(255,255,255,0.65); font-weight: 400;
+  }
+
+  .post-author::before { content: '·'; margin-right: 14px; opacity: 0.4; }
+
+  /* ========================================================================
+     3. 正文 + 目录布局
+     ======================================================================== */
+  .post-layout {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 28px 0;
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+  }
+
+  /* 浮动目录 */
+  .post-toc {
+    position: sticky;
+    top: 100px;
+    width: 160px;
+    flex-shrink: 0;
+    padding: 16px 0;
+  }
+
+  .toc-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.35;
+    margin-bottom: 16px;
+    padding-left: 12px;
+  }
+
+  .toc-list { display: flex; flex-direction: column; gap: 2px; }
+
+  :global(.toc-link) {
+    display: block;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 6px;
+    opacity: 0.45;
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  :global(.toc-link):hover { opacity: 0.8; background: rgba(128,128,128,0.05); }
+  :global(.toc-link.active) {
+    opacity: 1; border-left-color: #0040ff;
+    background: rgba(0,64,255,0.05); color: #0040ff; font-weight: 600;
+  }
+
+  /* 正文区 */
+  .post-body {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.08rem;
+    line-height: 2;
+    color: var(--text);
+  }
+
+  .post-body :global(p) {
+    margin-bottom: 1.6em; opacity: 0.88; text-align: justify; hyphens: auto;
+  }
+
+  .post-body :global(p:nth-child(even)) { padding-left: 3%; }
+
+  .post-body :global(p:first-of-type) {
+    font-size: 1.15rem; opacity: 1; line-height: 2.1; padding-left: 0;
+  }
+
+  .post-body :global(h2) {
+    font-size: 1.5rem; font-weight: 750; margin: 2.4em 0 0.7em;
+    padding-left: 12px; border-left: 3px solid #0040ff; letter-spacing: -0.3px;
+  }
+
+  .post-body :global(h3) {
+    font-size: 1.2rem; font-weight: 700; margin: 1.8em 0 0.5em; opacity: 0.85;
+  }
+
+  .post-body :global(blockquote) {
+    border-left: 2px solid rgba(0,64,255,0.3); margin: 2em 0;
+    padding: 4px 0 4px 24px; font-style: italic; opacity: 0.7; font-size: 1.02rem;
+  }
+
+  .post-body :global(pre) {
+    background: rgba(0,0,0,0.04); border-radius: 14px; padding: 24px;
+    overflow-x: auto; margin: 2em 0; font-size: 0.9rem; line-height: 1.7;
+  }
+
+  :global([data-theme="dark"]) .post-body :global(pre) { background: rgba(255,255,255,0.04); }
+
+  .post-body :global(code) {
+    font-family: 'Fira Code','JetBrains Mono',monospace; font-size: 0.88em;
+  }
+
+  .post-body :global(img) {
+    max-width: 100%; border-radius: 12px; margin: 2em auto; display: block; cursor: zoom-in;
+    transition: transform 0.2s;
+  }
+
+  .post-body :global(img):hover { transform: scale(1.01); }
+
+  .post-body :global(ul), .post-body :global(ol) {
+    margin: 1.5em 0; padding-left: 1.5em; line-height: 1.9;
+  }
+
+  /* ========================================================================
+     4. 上一篇 / 下一篇导航
+     ======================================================================== */
+  .post-nav {
+    max-width: 960px;
+    margin: 56px auto 0;
+    padding: 0 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px 24px;
+    border-radius: 16px;
+    /* 液态玻璃效果 */
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+  }
+
+  :global([data-theme="dark"]) .post-nav-link {
+    background: rgba(30,41,59,0.5);
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .post-nav-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.1);
+    border-color: rgba(0,64,255,0.35);
+  }
+
+  :global([data-theme="dark"]) .post-nav-link:hover {
+    box-shadow: 0 16px 36px rgba(0,0,0,0.35);
+  }
+
+  .post-nav-link.empty { visibility: hidden; }
+
+  .nav-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .post-nav-link.prev .nav-label { justify-content: flex-start; }
+  .post-nav-link.next .nav-label { justify-content: flex-end; }
+
+  .nav-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-nav-link.next { text-align: right; align-items: flex-end; }
+
+  /* 装饰小箭头背景圆 */
+  .post-nav-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,64,255,0.06);
+    transform: translateY(-50%);
+    transition: background 0.25s;
+  }
+
+  .post-nav-link.prev::before { left: 18px; }
+  .post-nav-link.next::before { right: 18px; }
+
+  .post-nav-link:hover::before { background: rgba(0,64,255,0.12); }
+
+  .post-nav-link.prev { padding-left: 56px; }
+  .post-nav-link.next { padding-right: 56px; }
+
+  /* ========================================================================
+     5. 底部返回
+     ======================================================================== */
+  .post-end {
+    max-width: 700px; margin: 48px auto 0; text-align: center; padding-bottom: 40px;
+  }
+
+  .post-return {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: #0040ff; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+    transition: gap 0.2s;
+  }
+
+  .post-return:hover { gap: 12px; }
+
+  /* ========================================================================
+     6. 图片灯箱
+     ======================================================================== */
+  :global(.lightbox) {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  :global(.lightbox.open) { display: flex; }
+
+  :global(.lightbox-close) {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  :global(.lightbox-close):hover { background: rgba(255,255,255,0.2); }
+
+  :global(#lightbox-img) {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  /* ========================================================================
+     7. 响应式
+     ======================================================================== */
+  @media (max-width: 860px) {
+    .post-layout { flex-direction: column; }
+    .post-toc { display: none; }
+    .post-nav { flex-direction: column; }
+    .post-nav-link.next { text-align: left; }
+    .post-nav-link.next .nav-label { justify-content: flex-start; }
+  }
+
+  @media (max-width: 640px) {
+    .post-hero { height: 35vh; min-height: 240px; }
+    .post-title { font-size: 1.5rem; }
+    .post-body { font-size: 1rem; line-height: 1.9; }
+    .post-body :global(p:first-of-type) { font-size: 1.08rem; }
+    .post-body :global(p:nth-child(even)) { padding-left: 0; }
+  }
+</style>

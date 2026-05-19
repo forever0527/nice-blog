@@ -1,0 +1,59 @@
+---
+// Footer.astro
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="smart-footer">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <h3>About This Site</h3>
+      <i class="fas fa-shopping-cart"></i> 商店:
+      <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a>
+      <span style="margin:0 5px">|</span>
+      <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a>
+      <p>致力于提供极致的交互体验。本站基于 Astro 构建。</p>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-runtime">
+      <span>已稳定运行</span>
+      <div id="site-runtime" class="time-display">加载中...</div>
+    </div>
+    <div class="footer-copyright">
+      <div class="tail">
+        <a href="/archive">
+           <!-- 图片路径示例 -->
+          <img src="/img/laa/char.png" alt="尾句" style="height:auto; width:300px; filter: invert(var(--invert-rate, 1));">
+        </a>
+      </div>
+      &copy; 2025 - {currentYear + 1} True Blue. All Rights Reserved. beat:2.0.1
+    </div>
+  </div>
+</footer>
+
+<script>
+  function updateRuntime() {
+    // 假设开始时间是 2023-10-31 (如果是未来时间会导致负数)
+    const startTime = new Date('2025-10-31T12:00:00').getTime(); 
+    const now = new Date().getTime();
+    const diff = now - startTime;
+    
+    if (diff < 0) {
+       const el = document.getElementById('site-runtime');
+       if(el) el.textContent = "即将开启";
+       return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    const runtimeElement = document.getElementById('site-runtime');
+    if (runtimeElement) {
+      runtimeElement.textContent = `${days}天 ${hours}小时 ${minutes}分 ${seconds}秒`;
+    }
+  }
+
+  setInterval(updateRuntime, 1000);
+  updateRuntime();
+</script>

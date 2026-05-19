@@ -1,0 +1,467 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FloatingButtons from '../components/FloatingButtons.astro';
+import Snow from '../components/Snow.astro';
+
+// 个人信息 — 修改此处的数据即可更新首页内容
+const profile = {
+  name: "True Blue",
+  title: "很高兴和你相遇~\\(≧▽≦)/~",
+  bio: "时间像一条河流载着我们顺流而下，遇到现实需要决策，但是我们无法停留 也无法回避，只能以最好的方式应对。你在 世界就在。",
+  avatar: "/img/ProfPic/1.jpg",
+  bgImage: "/img/bg/6.png",
+};
+
+// 备选背景图库 — 点击"更换图片"按钮循环切换
+const bgList = [
+  "/img/bg/0-1.png", "/img/bg/0-2.png", "/img/bg/0-3.png", "/img/bg/0-4.png",
+  "/img/bg/0-5.png", "/img/bg/0-6.png", "/img/bg/3.png", "/img/bg/4.png",
+];
+
+// 社交链接配置
+const socialLinks = [
+  { icon: "fa-brands fa-github", url: "https://github.com/forever0527" },
+  { icon: "fab fa-telegram", url: "https://t.me/Ang258258" },
+  { icon: "fas fa-video", url: "https://v.kuaishou.com/JxZnn7h3" },
+  { icon: "fab fa-tiktok", url: "https://v.douyin.com/MjO6gtSelJQ/" },
+];
+---
+
+<BaseLayout title={`${profile.name} - 懒得取名`}>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <Snow />
+
+  <main class="landing-container" id="landing-bg">
+    <div class="hero-card reveal">
+
+      <!-- 左侧：液态玻璃内容区 -->
+      <div class="glass-content">
+        <div class="content-inner">
+          <div class="welcome-badge">🎉Welcome to my world</div>
+
+          <h1 class="hero-title">
+            Hello, I'm<br>
+            <span class="highlight-text">{profile.name}</span>
+          </h1>
+
+          <p class="hero-subtitle">{profile.title}</p>
+          <p class="hero-bio">{profile.bio}</p>
+
+          <!-- 交互按钮组 -->
+          <div class="cta-group">
+            <a href="/blog" class="liquid-btn" target="_blank">
+              <span>Enter Blog</span>
+            </a>
+
+            <button id="change-bg-btn" class="secondary-btn">
+              <i class="fas fa-image"></i> 更换图片
+            </button>
+          </div>
+
+          <!-- 社交图标组 -->
+          <div class="social-icons">
+            {socialLinks.map((link) => (
+              <a href={link.url} target="_blank" class="icon-link" aria-label="Social Link">
+                <i class={link.icon}></i>
+              </a>
+            ))}
+          </div>
+
+          <div class="mini-footer">
+            <i class="fas fa-shopping-cart"></i> 商店:
+            <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a>
+            <span style="margin:0 5px">|</span>
+            <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a>
+            <br>
+            &copy; 2025 {profile.name}. Designed with Astro.
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧：视觉图片区 -->
+      <div id="visual-side" class="visual-side">
+        <div class="bottom-gradient"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 首页主题切换按钮 — 固定在右下，回到顶部按钮上方 -->
+  <button class="index-theme-btn" id="index-theme-toggle" aria-label="切换主题">
+    <svg class="index-icon-light" viewBox="0 0 24 24" width="18" height="18">
+      <path fill="currentColor" d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0 1.41.996.996 0 0 0 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06z"/>
+    </svg>
+    <svg class="index-icon-dark" viewBox="0 0 24 24" width="18" height="18">
+      <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+    </svg>
+  </button>
+
+  <FloatingButtons />
+</BaseLayout>
+
+<script>
+  // 首页主题切换
+  var htmlEl = document.documentElement;
+  function updateIndexThemeIcon(theme) {
+    var lightIcon = document.querySelector('.index-icon-light');
+    var darkIcon = document.querySelector('.index-icon-dark');
+    if (lightIcon && darkIcon) {
+      lightIcon.style.display = theme !== 'dark' ? 'block' : 'none';
+      darkIcon.style.display = theme !== 'dark' ? 'none' : 'block';
+    }
+  }
+  updateIndexThemeIcon(htmlEl.dataset.theme || 'light');
+
+  document.getElementById('index-theme-toggle')?.addEventListener('click', function () {
+    var newTheme = htmlEl.dataset.theme === 'light' ? 'dark' : 'light';
+    htmlEl.dataset.theme = newTheme;
+    localStorage.setItem('theme', newTheme);
+    updateIndexThemeIcon(newTheme);
+    window.dispatchEvent(new Event('theme-change'));
+  });
+
+  window.addEventListener('theme-change', function () {
+    updateIndexThemeIcon(htmlEl.dataset.theme || 'light');
+  });
+
+  // Netlify Identity Widget 初始化
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.init();
+  }
+</script>
+
+<!-- 背景切换逻辑 — 使用 define:vars 将服务端数据安全注入客户端 -->
+<script define:vars={{ bgList, initialBg: profile.bgImage }}>
+  (function () {
+    var bgImages = bgList;
+    // initialBg 可能不在 bgList 中（初始图由 CSS 兜底），
+    // indexOf 返回 -1 时 bgImages[-1] = undefined，updateBackgrounds 会跳过
+    var currentIdx = bgImages.indexOf(initialBg);
+    var mainContainer = document.getElementById('landing-bg');
+    var visualSide = document.getElementById('visual-side');
+    var changeBtn = document.getElementById('change-bg-btn');
+
+    function updateBackgrounds(url) {
+      if (!url) return;
+      if (mainContainer) mainContainer.style.backgroundImage = 'url(' + url + ')';
+      if (visualSide) visualSide.style.backgroundImage = 'url(' + url + ')';
+    }
+
+    // 初始加载
+    updateBackgrounds(bgImages[currentIdx]);
+
+    // 点击"更换图片"按钮循环切换
+    if (changeBtn) {
+      changeBtn.addEventListener('click', function () {
+        currentIdx = (currentIdx + 1) % bgImages.length;
+        updateBackgrounds(bgImages[currentIdx]);
+      });
+    }
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     首页布局 — 全屏 Hero + 液态玻璃卡片
+     使用 Astro scoped 样式，确保不影响其他页面
+     ========================================================================== */
+
+  /* === 1. 全局布局 === */
+  .landing-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.8s ease;
+    z-index: 1;
+  }
+
+  /* 背景变暗遮罩 — 通过伪元素实现，不影响内容层级 */
+  .landing-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.5s ease;
+    z-index: -1;
+  }
+
+  /* 深色模式下背景整体压暗 */
+  :global([data-theme="dark"]) .landing-container::before {
+    background: rgba(5, 5, 5, 0.7);
+  }
+
+  /* 首页主题切换按钮 — 液态玻璃圆形 */
+  :global(.index-theme-btn) {
+    position: fixed;
+    right: 30px;
+    bottom: 68px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    color: var(--text);
+    cursor: pointer;
+    z-index: var(--z-toggle);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+
+  :global([data-theme="dark"]) .index-theme-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0,64,255,0.06);
+  }
+
+  :global(.index-theme-btn):hover {
+    transform: scale(1.1);
+    border-color: rgba(0, 64, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 30px rgba(0,64,255,0.08);
+  }
+
+  :global(.index-theme-btn):active {
+    transform: scale(0.9);
+  }
+
+  :global(.index-theme-btn) svg {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  @media (min-width: 768px) {
+    :global(.index-theme-btn) {
+      right: 47px;
+      bottom: 78px;
+      width: 50px;
+      height: 50px;
+    }
+    :global(.index-theme-btn) svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  /* 首页隐藏回到顶部按钮 + 音乐按钮 */
+  :global(#back-to-top) { display: none !important; }
+  :global(.music-fab)   { display: none !important; }
+  :global(.music-panel) { display: none !important; }
+
+  /* === 2. 主卡片 (Hero Card) === */
+  .hero-card {
+    width: 100%;
+    max-width: 1000px;
+    height: 70vh;
+    border-radius: 40px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+  }
+
+  /* === 3. 左侧：玻璃质感内容区 === */
+  .glass-content {
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5vw;
+  }
+
+  :global([data-theme="dark"]) .glass-content {
+    background: rgba(94, 95, 97, 0.3);
+  }
+
+  .content-inner {
+    max-width: 480px;
+  }
+
+  .welcome-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background: rgba(0, 64, 255, 0.1);
+    color: #0040ff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .highlight-text {
+    background: linear-gradient(135deg, #0040ff 0%, #00d2ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 1px; }
+  .hero-bio { font-size: 0.88rem; opacity: 0.8; line-height: 1.6; margin-bottom: 14px; white-space: pre-line; }
+
+  /* === 按钮组 === */
+  .cta-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  /* 公共 hover 效果 — 按钮上浮 + 光晕 */
+  :is(.liquid-btn, .secondary-btn):hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 1px 10px var(--text);
+  }
+
+  .liquid-btn {
+    padding: 12px 28px;
+    border-radius: 50px;
+    background: var(--text);
+    color: var(--bg);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    will-change: transform;
+  }
+
+  .secondary-btn {
+    padding: 12px 22px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    will-change: transform;
+  }
+
+  :global([data-theme="dark"]) .secondary-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* === 社交图标按钮 === */
+  .social-icons { display: flex; gap: 10px; }
+
+  .icon-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    will-change: transform;
+  }
+
+  :global([data-theme="dark"]) .icon-link { background: rgba(255, 255, 255, 0.1); }
+
+  .icon-link:hover {
+    background: #0040ff;
+    color: #fff;
+    transform: scale(1.2) rotate(10deg);
+    text-decoration: none;
+  }
+
+  /* === 底部信息 === */
+  .mini-footer { margin-top: 20px; font-size: 0.72rem; opacity: 0.6; }
+
+  /* === 4. 右侧：视觉图片区 === */
+  .visual-side {
+    background-image: url('/img/bg/6.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    margin-left: -110px;
+    z-index: 1;
+  }
+
+  .bottom-gradient {
+    bottom: 0; left: 0; width: 100%; height: 120px;
+    background: linear-gradient(to top, var(--bg), transparent);
+    display: none;
+  }
+
+  /* === 5. 响应式 — 移动端适配 === */
+  @media (max-width: 900px) {
+    .landing-container {
+      padding: 15px;
+      height: auto;
+      min-height: 100vh;
+      align-items: flex-start;
+    }
+
+    .hero-card {
+      height: auto;
+      grid-template-columns: 1fr;
+      grid-template-rows: 400px auto;
+      border-radius: 30px;
+      margin-top: 10px;
+    }
+
+    /* 移动端图片在上方 */
+    .visual-side {
+      grid-row: 1;
+      background-image: url('/img/ProfPic/1.jpg');
+      background-position: center top;
+    }
+
+    /* 移动端内容居中 */
+    .glass-content {
+      grid-row: 2;
+      padding: 40px 25px;
+      text-align: center;
+    }
+
+    .content-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cta-group { flex-direction: column; width: 100%; }
+
+    .liquid-btn, .secondary-btn {
+      width: 60%;
+      margin: 0 auto;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .social-icons { justify-content: center; }
+  }
+</style>

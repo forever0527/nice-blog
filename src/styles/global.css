@@ -1,0 +1,920 @@
+/* ==========================================================================
+   1. 主题变量
+   ========================================================================== */
+
+:root {
+    --bg:          #f8f9fa;
+    --text:        #212529;
+    --light-bg:    #f8f9fa;
+    --dark-bg:     #0f172a;
+
+    --header-bg:   url(/public/img/bg/6.png) repeat center center;
+
+    --wave-1:      rgba(255, 255, 255, 0.7);
+    --wave-2:      rgba(255, 255, 255, 0.5);
+    --wave-3:      rgba(255, 255, 255, 0.3);
+
+    --btn-bg:      #222;
+    --btn-text:    #fff;
+
+    --nav-bg:      rgba(255, 255, 255, 0.1);
+    --nav-edge:    #00000026;
+    --nav-blur:    10px;
+
+    --value-color: #000000;
+    --invert-rate: 1;
+
+    --z-snow:      999;
+    --z-navbar:    1000;
+    --z-sidebar:   1001;
+    --z-toggle:    1002;
+    --z-overlay:   9999;
+}
+
+html[data-theme="dark"] {
+    --bg:          #0f172a;
+    --text:        #f1f5f9;
+
+    --header-bg:   linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+                   url(/public/img/bg/6.png) repeat center center;
+
+    --wave-1:      #1e293b;
+    --wave-2:      #334155;
+    --wave-3:      #475569;
+
+    --btn-bg:      #fff;
+    --btn-text:    #222;
+
+    --nav-bg:      rgba(0, 0, 0, 0.08);
+    --nav-edge:    #ffffff19;
+    --value-color: #ffffff;
+    --invert-rate: 0;
+}
+
+/* ==========================================================================
+   2. 基础全局元素
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+    background-color: var(--bg);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 4px;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease;
+}
+
+/* ==========================================================================
+   3. 导航栏
+   ========================================================================== */
+
+.smart-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 76px;
+    padding: 0 3vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: var(--z-navbar);
+
+    background: var(--nav-bg);
+    backdrop-filter: blur(var(--nav-blur));
+    -webkit-backdrop-filter: blur(var(--nav-blur));
+    box-shadow: 10px 10px 8px var(--nav-edge);
+    border-bottom-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.smart-navbar.nav-hidden {
+    transform: translateY(-100%);
+}
+
+.nav-logo img {
+    height: 25px;
+    transition: 0.2s;
+}
+
+@media (min-width: 768px) {
+    .nav-logo img {
+        height: 35px;
+    }
+}
+
+/* 导航栏 - 右侧操作区 */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 音乐律动条 — 默认隐藏，播放时 JS 显示并驱动高度 */
+.music-bars {
+    display: none;
+    align-items: flex-end;
+    gap: 4px;
+    height: 28px;
+    padding: 0 6px;
+}
+
+.music-bar {
+    width: 5px;
+    min-height: 4px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: height 0.12s ease;
+}
+
+/* 播放时 CSS 兜底动画，配合 JS 频率数据覆盖高度 */
+.music-bars.active .music-bar {
+    animation: bar-idle 0.7s ease-in-out infinite;
+}
+.music-bars.active .music-bar:nth-child(1) { animation-delay: 0s; }
+.music-bars.active .music-bar:nth-child(2) { animation-delay: 0.12s; }
+.music-bars.active .music-bar:nth-child(3) { animation-delay: 0.24s; }
+.music-bars.active .music-bar:nth-child(4) { animation-delay: 0.36s; }
+
+@keyframes bar-idle {
+    0%, 100% { height: 5px; }
+    50%      { height: 22px; }
+}
+
+/* 桌面端导航栏主题按钮 — 仅太阳/月亮图标，无背景 */
+.nav-theme-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.nav-theme-btn:hover {
+    transform: scale(1.1);
+    background: rgba(0, 64, 255, 0.15);
+}
+
+.nav-theme-btn:active {
+    transform: scale(0.9);
+}
+
+/* 移动端隐藏导航栏主题按钮（改用侧边栏内的按钮） */
+@media (max-width: 768px) {
+    .nav-theme-btn {
+        display: none;
+    }
+}
+
+/* 侧边栏主题切换按钮 — 移动端左上角，纯图标 */
+.sidebar-theme-btn {
+    display: none;
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--value-color);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s, transform 0.2s;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .sidebar-theme-btn {
+        display: flex;
+    }
+}
+
+.sidebar-theme-btn:hover {
+    background: rgba(128, 128, 128, 0.15);
+    transform: scale(1.1);
+}
+
+.sidebar-theme-btn:active {
+    transform: scale(0.9);
+}
+
+.sidebar-theme-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* 导航栏 - 更多按钮 */
+.button {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.button .btn {
+    position: relative;
+    width: 50px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button .btn a {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 15px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 10px;
+    color: #fff;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-decoration: none;
+    overflow: hidden;
+    z-index: 1;
+    transition: letter-spacing 0.3s, backdrop-filter 0.3s;
+    backdrop-filter: blur(15px);
+}
+
+.button .btn:hover a {
+    letter-spacing: 3px;
+}
+
+.button .btn a::before {
+    content: "";
+    position: absolute;
+    inset: 0 50% 0 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.15), transparent);
+    transform: skewX(45deg) translateX(0);
+    transition: transform 0.3s;
+}
+
+.button .btn:hover a::before {
+    transform: skewX(45deg) translateX(200%);
+}
+
+.button .btn::before,
+.button .btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 10px;
+    border-radius: 10px;
+    background: #002FA7;
+    box-shadow:
+        0 0 5px   #002FA7,
+        0 0 15px  #002FA7,
+        0 0 30px  #002FA7,
+        0 0 60px  #002FA7;
+    transition: all 0.1s 0.1s;
+}
+
+.button .btn::before { bottom: -5px; }
+.button .btn::after  { top:    -5px; }
+
+.button .btn:hover::before,
+.button .btn:hover::after {
+    width: 80%;
+    height: 50%;
+    border-radius: 30px;
+}
+
+.button .btn:hover::before { bottom: 0; }
+.button .btn:hover::after  { top:    0; }
+
+/* ==========================================================================
+   4. 侧边栏
+   ========================================================================== */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 70vw;
+    max-width: 380px;
+    height: 100%;
+    padding: 40px 20px;
+    padding-top: max(40px, env(safe-area-inset-top));
+
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    overflow-y: auto;
+    z-index: var(--z-sidebar);
+
+    transition: transform 0.35s cubic-bezier(0.32, 1, 0.32, 1);
+    transform: translateX(100%);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+
+    border-radius: 28px 0 0 28px;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.avatar1-wrap {
+    position: relative;
+    margin-top: 40px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.avatar1-wrap::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -60%;
+    width: 30%;
+    height: 140%;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 70%
+    );
+    transform: skewX(-15deg);
+    animation: avatar-shine 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.avatar1-wrap:hover::after {
+    animation: avatar-shine-hover 0.4s ease forwards;
+}
+
+.avatar1 {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+}
+
+/* 侧边栏 logo — 移动端显示在头像下方 */
+.sidebar-logo {
+    display: none;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .sidebar-logo {
+        display: block;
+    }
+}
+
+.sidebar-logo img {
+    height: 22px;
+    filter: invert(var(--invert-rate, 1));
+}
+
+.value {
+    font-size: 15px;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 10px;
+    color: var(--value-color);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    border-radius: 15px;
+    transition: all 0.3s;
+}
+
+.value:not(:active):hover,
+.value:focus {
+    border: 0.8px solid var(--value-color);
+    color: var(--value-color);
+}
+
+.value:focus,
+.value:active {
+    background: rgb(0, 64, 255);
+    color: #fff;
+    margin-left: 17px;
+    border: none;
+    outline: none;
+}
+
+.value::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 80%;
+    background: #0040ff;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.value:focus::before,
+.value:active::before {
+    opacity: 1;
+}
+
+.value i {
+    width: 22px;
+    margin-right: 5px;
+}
+
+/* 侧边栏 桌面调整 */
+@media (min-width: 769px) {
+    .sidebar {
+        top: 90px;
+        right: 15px;
+        height: auto;
+        min-height: 300px;
+        width: 200px;
+        padding: 24px;
+        gap: 12px;
+        border-radius: 28px;
+        transform: translateX(calc(100% + 20px));
+        align-items: stretch;
+        box-shadow:
+            3px  3px 3px var(--nav-edge),
+           -3px  3px 3px var(--nav-edge),
+            3px -3px 3px var(--nav-edge),
+           -3px -3px 3px var(--nav-edge);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .avatar1-wrap {
+        display: none;
+    }
+
+    .sidebar > :not(.avatar1-wrap) {
+        text-align: center;
+    }
+
+    .sidebar:hover > .value:not(:hover) {
+        filter: blur(1.5px);
+        transform: scale(0.95);
+        transition: filter 0.3s ease, transform 0.3s ease;
+    }
+}
+
+/* 侧边栏音乐播放按钮 — 移动端左下角 */
+.sidebar-music {
+    display: none;
+    margin-top: auto;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .sidebar-music {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+.sidebar-music-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: none;
+    background: rgba(0, 64, 255, 0.1);
+    color: var(--value-color);
+    font-size: 14px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.sidebar-music-btn:hover {
+    background: rgba(0, 64, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.sidebar-music-btn:active {
+    background: #0040ff;
+    color: #fff;
+    transform: scale(0.95);
+}
+
+/* ==========================================================================
+   5. Footer
+   ========================================================================== */
+
+.smart-footer {
+    position: relative;
+    width: 100%;
+    margin-top: 40px;
+    padding: 1px 0 0;
+    background: var(--nav-bg);
+    backdrop-filter: blur(var(--nav-blur));
+    -webkit-backdrop-filter: blur(var(--nav-blur));
+    border-top-right-radius: 25px;
+    border-top-left-radius: 25px;
+    box-shadow: 5px -5px 5px var(--nav-edge);
+    font-size: 0.9rem;
+    color: var(--text);
+    text-align: center;
+    z-index: 10;
+}
+
+.footer-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.footer-info a,
+.footer-info p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+.footer-info p {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.footer-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--text);
+    opacity: 0.2;
+    border-radius: 2px;
+}
+
+.footer-runtime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-runtime span {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.time-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.footer-copyright {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+    .footer-inner {
+        padding-right: 100px;
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .footer-info p {
+        margin-left: auto;
+    }
+}
+
+/* ==========================================================================
+   6. 标题装饰 波浪 雪
+   ========================================================================== */
+
+.theme-header-decor {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    min-height: 300px;
+    background: var(--header-bg);
+    background-size: cover;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.profile-wrapper {
+    text-align: center;
+    color: #fff;
+    z-index: 10;
+    margin-top: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.8);
+    margin: 0 auto 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 头像光影扫过 — hover 触发 + 自动循环 */
+.profile-avatar::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -60%;
+    width: 60%;
+    height: 140%;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgb(255, 255, 255) 50%,
+        transparent 70%
+    );
+    transform: skewX(-15deg);
+    animation: avatar-shine 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.profile-avatar:hover::after {
+    animation: avatar-shine-hover 0.4s ease forwards;
+}
+
+@keyframes avatar-shine {
+    0%, 90%, 100% { left: -60%; opacity: 0; }
+    45% { left: 120%; opacity: 1; }
+}
+
+@keyframes avatar-shine-hover {
+    from { left: -60%; opacity: 0; }
+    to   { left: 120%; opacity: 1; }
+}
+
+.profile-name img {
+    height: 28px;
+    margin-bottom: 8px;
+}
+
+/* 移动端隐藏 header 装饰中的头像和 logo */
+@media (max-width: 768px) {
+    .profile-avatar,
+    .profile-name {
+        display: none;
+    }
+}
+
+.profile-desc {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 300px;
+    margin: 0 auto 10px;
+    line-height: 1.4;
+    display: inline;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background-color: #fff;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+    vertical-align: middle;
+}
+
+.waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    margin-bottom: -1px;
+}
+
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+}
+
+.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s;  fill: var(--wave-1); opacity: 0.7; }
+.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; fill: var(--wave-2); opacity: 0.5; }
+.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; fill: var(--wave-3); opacity: 0.3; }
+.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; fill: var(--bg);    opacity: 1; }
+
+/* Snow */
+.snow-container {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: var(--z-snow);
+    display: none;
+}
+
+html[data-theme="dark"] .snow-container {
+    display: block;
+}
+
+.snowflake {
+    position: absolute;
+    top: -20px;
+    animation: drift var(--dur) linear infinite;
+    animation-delay: var(--delay);
+    pointer-events: none;
+    will-change: transform;
+}
+
+@keyframes drift {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(var(--sway, 20px), 25vh) rotate(90deg); }
+    50%  { transform: translate(calc(var(--sway, 20px) * -0.5), 50vh) rotate(180deg); }
+    75%  { transform: translate(calc(var(--sway, 20px) * 0.3), 75vh) rotate(270deg); }
+    100% { transform: translate(0, 105vh) rotate(360deg); }
+}
+
+/* ==========================================================================
+   7. 回到顶部按钮
+   ========================================================================== */
+
+.back-to-top {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    color: var(--text);
+    cursor: pointer;
+    z-index: var(--z-toggle);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+:global([data-theme="dark"]) .back-to-top {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(0,64,255,0.05);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    border-color: rgba(0,64,255,0.35);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 0 30px rgba(0,64,255,0.08);
+}
+
+.back-to-top svg {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+@media (min-width: 768px) {
+    .back-to-top {
+        right: 47px;
+        bottom: 30px;
+    }
+}
+
+/* ==========================================================================
+   8. 雪花覆盖和动画
+   ========================================================================== */
+
+#overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: var(--z-overlay);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    overflow: hidden;
+}
+
+#overlay-container.active {
+    width: 250vw;
+    height: 250vw;
+    visibility: visible;
+}
+
+.content {
+    padding: 40px 20px;
+    margin: 0 auto;
+}
+
+/* Keyframes */
+@keyframes move-forever {
+    0%   { transform: translate3d(-90px, 0, 0); }
+    100% { transform: translate3d( 85px, 0, 0); }
+}
+
+@keyframes fall {
+    to { transform: translateY(100vh); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0; }
+}

@@ -1,0 +1,242 @@
+---
+//header.astro
+---
+<!-- 导航栏 -->
+<nav class="smart-navbar" id="main-nav">
+  <a class="nav-logo" href="/">
+    <img src="/img/laa/char1.png" alt="Logo">
+  </a>
+  <div class="nav-actions">
+    <!-- 音乐律动条 — 播放时显示 -->
+    <div class="music-bars" id="music-bars">
+      <span class="music-bar"></span>
+      <span class="music-bar"></span>
+      <span class="music-bar"></span>
+      <span class="music-bar"></span>
+    </div>
+    <button class="nav-theme-btn" id="nav-theme-toggle" aria-label="切换主题">
+      <svg class="nav-icon-light" viewBox="0 0 24 24" width="20" height="20">
+        <path fill="currentColor" d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0 1.41.996.996 0 0 0 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06z"/>
+      </svg>
+      <svg class="nav-icon-dark" viewBox="0 0 24 24" width="20" height="20">
+        <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+      </svg>
+    </button>
+    <button class="button" id="mybutton" aria-label="Toggle Menu">
+      <div class="btn"><a>more</a></div>
+    </button>
+  </div>
+</nav>
+
+<!-- 侧边栏 -->
+<nav class="sidebar" id="sidebar" aria-hidden="true">
+  <button class="sidebar-theme-btn" id="sidebar-theme-toggle" aria-label="切换主题">
+    <svg class="sidebar-icon-light" viewBox="0 0 24 24" width="22" height="22">
+      <path fill="currentColor" d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0 1.41.996.996 0 0 0 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06z"/>
+    </svg>
+    <svg class="sidebar-icon-dark" viewBox="0 0 24 24" width="22" height="22">
+      <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+    </svg>
+  </button>
+  <div class="avatar1-wrap">
+    <img class="avatar1" src="/img/ProfPic/1.jpg" alt="头像">
+  </div>
+  <div class="sidebar-logo">
+    <a href="/">
+      <img src="/img/laa/long.png" alt="Logo">
+    </a>
+  </div>
+  <button class="value" data-href="/blog"><i class="fa-brands fa-glide-g"></i>Blog</button>
+  <button class="value" data-href="/photo"><i class="fa-solid fa-eye"></i>Photo</button>
+  <button class="value" data-href="/aigc"><i class="fa-solid fa-heart"></i>Aigc</button>
+  <button class="value" data-href="/link"><i class="fa-solid fa-earth-americas"></i>Link</button>
+  <button class="value" data-href="/about"><i class="fa-solid fa-at"></i>About</button>
+  <button class="value" data-href="/download"><i class="fa-solid fa-download"></i>Download</button>
+  <div class="sidebar-music">
+    <button class="sidebar-music-btn" id="sidebar-music-btn" aria-label="播放音乐">
+      <i class="fas fa-play" id="sidebar-music-icon"></i>
+      <span>音乐播放器</span>
+    </button>
+  </div>
+</nav>
+
+<!-- 头部装饰区域 -->
+<header class="theme-header-decor">
+  <div class="profile-wrapper sync-anim">
+    <div class="profile-avatar" id="sidebar-avatar">
+      <img src="/img/ProfPic/1.jpg" alt="Avatar">
+    </div>
+    <div class="profile-name">
+      <a href="/">
+        <img src="/img/laa/long.png" alt="Logo">
+      </a>
+    </div>
+    <div>
+      <div class="profile-desc" id="typewriter-text"></div>
+      <span class="cursor"></span>
+    </div>
+  </div>
+  
+  <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+       viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+    <defs>
+      <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+    </defs>
+    <g class="parallax">
+      <use xlink:href="#gentle-wave" x="48" y="0" class="sync-anim" />
+      <use xlink:href="#gentle-wave" x="48" y="3" class="sync-anim" />
+      <use xlink:href="#gentle-wave" x="48" y="5" class="sync-anim" />
+      <use xlink:href="#gentle-wave" x="48" y="7" class="sync-anim" />
+    </g>
+  </svg>
+</header>
+
+<script>
+  // 0. 主题切换（导航栏按钮 + 侧边栏按钮）
+  const htmlEl = document.documentElement;
+
+  function toggleTheme() {
+    const newTheme = htmlEl.dataset.theme === 'light' ? 'dark' : 'light';
+    htmlEl.dataset.theme = newTheme;
+    localStorage.setItem('theme', newTheme);
+    updateAllThemeIcons(newTheme);
+    window.dispatchEvent(new Event('theme-change'));
+  }
+
+  function updateAllThemeIcons(theme) {
+    const isLight = theme !== 'dark';
+    // 导航栏按钮
+    const navLight = document.querySelector('.nav-icon-light');
+    const navDark = document.querySelector('.nav-icon-dark');
+    if (navLight && navDark) {
+      navLight.style.display = isLight ? 'block' : 'none';
+      navDark.style.display = isLight ? 'none' : 'block';
+    }
+    // 侧边栏按钮
+    const sidebarLight = document.querySelector('.sidebar-icon-light');
+    const sidebarDark = document.querySelector('.sidebar-icon-dark');
+    if (sidebarLight && sidebarDark) {
+      sidebarLight.style.display = isLight ? 'block' : 'none';
+      sidebarDark.style.display = isLight ? 'none' : 'block';
+    }
+  }
+
+  updateAllThemeIcons(htmlEl.dataset.theme || 'light');
+  document.getElementById('nav-theme-toggle')?.addEventListener('click', toggleTheme);
+  document.getElementById('sidebar-theme-toggle')?.addEventListener('click', toggleTheme);
+
+  // 监听来自其他组件的主题变化事件
+  window.addEventListener('theme-change', function () {
+    updateAllThemeIcons(htmlEl.dataset.theme || 'light');
+  });
+
+  // 1. 侧边栏交互
+  const sidebar = document.getElementById('sidebar');
+  const navBtn = document.getElementById('mybutton');
+
+  function toggleSidebar() {
+    const isActive = sidebar?.classList.toggle('active');
+    sidebar?.setAttribute('aria-hidden', String(!isActive));
+  }
+
+  navBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (sidebar?.classList.contains('active') && 
+        !sidebar.contains(target) && 
+        !navBtn?.contains(target)) {
+      sidebar.classList.remove('active');
+    }
+  });
+
+  // 侧边栏链接跳转
+  document.querySelectorAll('.sidebar .value').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const href = target.dataset.href;
+      if (href) window.location.href = href;
+    });
+  });
+
+  // 2. 导航栏滚动隐藏
+  let lastScrollY = window.scrollY;
+  const navbar = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+      navbar?.classList.add('nav-hidden');
+    } else {
+      navbar?.classList.remove('nav-hidden');
+    }
+    lastScrollY = window.scrollY;
+  });
+
+  // 3. 打字机效果 — 每句播放完毕从一言 API 获取新句子
+  const texts = [
+    "梦想就像远方的灯塔", "就算遥不可及", "也要朝着它奋力游去",
+  ];
+  let textIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let typewriterElement = document.getElementById('typewriter-text');
+
+  function fetchHitokoto() {
+    fetch('https://v1.hitokoto.cn/')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.hitokoto && texts.indexOf(data.hitokoto) === -1) {
+          texts.push(data.hitokoto);
+        }
+      })
+      .catch(function () {});
+  }
+
+  function typeWriter() {
+    if (!typewriterElement) return;
+    const currentText = texts[textIndex];
+    if (isDeleting) {
+      typewriterElement.textContent = currentText.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      typewriterElement.textContent = currentText.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let typeSpeed = isDeleting ? 50 : 100;
+    if (!isDeleting && charIndex === currentText.length) {
+      typeSpeed = 4000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; textIndex = (textIndex + 1) % texts.length; typeSpeed = 500;
+      // 这句播放完毕，拉取新句子
+      fetchHitokoto();
+    }
+    setTimeout(typeWriter, typeSpeed);
+  }
+  setTimeout(typeWriter, 1000);
+
+  // 4. 头像点击换背景
+  function changeBackground() {
+    const backgrounds = [
+      '/img/bg/1.png', '/img/bg/2.png', '/img/bg/3.png', '/img/bg/4.png',
+      '/img/bg/5.png', '/img/bg/6.png', '/img/bg/0-3.png', '/img/bg/0-4.png'
+    ];
+    const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+    const headerDecor = document.querySelector('.theme-header-decor') as HTMLElement;
+
+    if (headerDecor) {
+      const isDark = document.documentElement.dataset.theme === 'dark';
+      if (isDark) {
+        headerDecor.style.background = `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${randomBg}) repeat center center`;
+      } else {
+        headerDecor.style.background = `url(${randomBg}) repeat center center`;
+      }
+      headerDecor.style.backgroundSize = 'cover';
+    }
+  }
+  document.getElementById('sidebar-avatar')?.addEventListener('click', changeBackground);
+  // 移动端侧边栏头像点击换背景
+  document.querySelector('.avatar1-wrap')?.addEventListener('click', changeBackground);
+</script>

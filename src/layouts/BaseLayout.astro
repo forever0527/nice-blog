@@ -1,0 +1,65 @@
+---
+import '../styles/global.css';
+import MusicPlayer from '../components/MusicPlayer.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Personal Blog', description = '致力于提供极致的交互体验' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content={description}>
+  <title>{title}</title>
+
+  <!-- Font Awesome图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!--防止深色模式闪烁 (FOUC) -->
+  <script is:inline>
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.dataset.theme = theme;
+  </script>
+</head>
+
+<body>
+  <div id="app">
+    <div id="overlay-container"></div>
+    <!-- 主内容插槽 -->
+    <slot />
+    <MusicPlayer />
+  </div>
+
+  <!-- 网页标题彩蛋逻辑 -->
+  <script>
+    // 网页标题彩蛋
+    let normal_title = document.title;
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+            document.title = getRandomTitle();
+        } else {
+            document.title = normal_title;
+        }
+    });
+
+    function getRandomTitle() {
+        const titles = [
+            '┭┮﹏┭┮ 我会想你的……别走嘛～',
+            '(っ°Д°)っ 啊， 网站炸了！',
+            '再留一会儿嘛～我会寂寞的 QAQ',
+            '等等！还没来得及说喜欢你呢！',
+            '走了可不许后悔哦！(╯°Д°)╯︵ ┻━┻',
+        ];
+        return titles[Math.floor(Math.random() * titles.length)];
+    }
+  </script>
+</body>
+</html>

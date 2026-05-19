@@ -1,0 +1,27 @@
+---
+// 悬浮操作按钮 — 回到顶部
+// 使用位置: 所有页面底部
+---
+<!-- 回到顶部按钮 -->
+<button class="back-to-top" id="back-to-top" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24">
+    <path fill="currentColor" d="M1 22l11-20 11 20z"/>
+  </svg>
+</button>
+
+<script>
+  // === 回到顶部逻辑 ===
+  const backToTop = document.getElementById('back-to-top');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 200) {
+      backToTop?.classList.add('show');
+    } else {
+      backToTop?.classList.remove('show');
+    }
+  }, { passive: true });
+
+  backToTop?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

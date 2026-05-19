@@ -1,0 +1,288 @@
+---
+// 音乐播放器 — 合成音色 + CC 免费音乐 + 可视化律动
+---
+
+<button class="music-fab" id="music-fab" title="音乐播放器" aria-label="打开音乐播放器">
+  <i class="fas fa-play" id="music-fab-icon"></i>
+</button>
+
+<!-- 隐藏的 audio 元素，用于播放文件类型曲目 -->
+<audio id="music-audio" preload="none" crossorigin="anonymous"></audio>
+
+<div class="music-panel" id="music-panel">
+  <span class="music-panel-title" id="music-panel-title">未在播放</span>
+  <div class="music-panel-actions">
+    <button id="music-prev" title="上一首"><i class="fas fa-step-backward"></i></button>
+    <button id="music-pp" title="播放/暂停"><i class="fas fa-play"></i></button>
+    <button id="music-next" title="下一首"><i class="fas fa-step-forward"></i></button>
+    <button id="music-random" title="随机播放"><i class="fas fa-random"></i></button>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // === 播放列表：synth 为内置合成，file 为远程音频 ===
+    var playlist = [
+      { title: '稻香', url: 'http://music.163.com/song/media/outer/url?id=3372049929.mp3' },
+      { title: '夸互号外卧胡',  url: 'http://music.163.com/song/media/outer/url?id=1836115593.mp3' },
+      { title: '别咬我',  url: 'http://music.163.com/song/media/outer/url?id=27901464.mp3' },
+      { title: '复古旋律', type: 'file', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+      { title: '暗潮涌动', type: 'file', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+      { title: '清晨序曲', type: 'file', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+      { title: '数字梦境', type: 'file', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+      { title: '爵士漫步', type: 'file', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+    ];
+
+    var audioCtx = null;
+    var analyser = null;
+    var gainNode = null;
+    var mediaSource = null;
+    var activeOscillators = [];
+    var animId = null;
+    var currentIdx = -1;
+    var isPlaying = false;
+    var isRandom = false;
+    var dataArray = null;
+
+    var fab = document.getElementById('music-fab');
+    var fabIcon = document.getElementById('music-fab-icon');
+    var panel = document.getElementById('music-panel');
+    var panelTitle = document.getElementById('music-panel-title');
+    var playPauseBtn = document.getElementById('music-pp');
+    var audioEl = document.getElementById('music-audio');
+    var barsWrap = document.getElementById('music-bars');
+
+    function updatePlayIcon(playing) {
+      var cls = playing ? 'fas fa-pause' : 'fas fa-play';
+      if (fabIcon) fabIcon.className = cls;
+      var pp = playPauseBtn ? playPauseBtn.querySelector('i') : null;
+      if (pp) pp.className = cls;
+      var sb = document.getElementById('sidebar-music-icon');
+      if (sb) sb.className = cls;
+    }
+
+    function showBars() { if (barsWrap) { barsWrap.style.display = 'flex'; barsWrap.classList.add('active'); } }
+    function hideBars() { if (barsWrap) { barsWrap.style.display = 'none'; barsWrap.classList.remove('active'); } }
+
+    // === 清理（不销毁 AudioContext，只停当前播放） ===
+    function stopAudio() {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      activeOscillators.forEach(function (o) { try { o.stop(); } catch (e) {} });
+      activeOscillators = [];
+      try { audioEl.pause(); } catch (e) {}
+      hideBars();
+    }
+
+    // === 可视化 ===
+    function visualize() {
+      if (!analyser || !dataArray) { animId = requestAnimationFrame(visualize); return; }
+      analyser.getByteFrequencyData(dataArray);
+      var bars = document.querySelectorAll('.music-bar');
+      bars.forEach(function (bar, i) {
+        var idx = Math.floor(i * dataArray.length / bars.length);
+        bar.style.height = Math.max(4, (dataArray[idx] / 255) * 24) + 'px';
+      });
+      animId = requestAnimationFrame(visualize);
+    }
+
+    // === 初始化 AudioContext — 整个生命周期只创建一次 ===
+    function initAudioCtx() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      analyser.smoothingTimeConstant = 0.82;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0.08;
+      analyser.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      // MediaElementSource 只创建一次
+      mediaSource = audioCtx.createMediaElementSource(audioEl);
+      mediaSource.connect(analyser);
+    }
+
+    // === 合成器 ===
+    var synthPresets = {
+      ambient: { freqs: [130.81, 164.81, 196.00, 261.63], wave: 'sine', vol: 0.08, filt: 800 },
+      deep:    { freqs: [65.41, 82.41, 98.00],            wave: 'triangle', vol: 0.1, filt: 400 },
+      light:   { freqs: [261.63, 329.63, 392.00],         wave: 'sine', vol: 0.06, filt: 1200 },
+    };
+
+    function playSynth(preset) {
+      initAudioCtx();
+      audioEl.pause();
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = preset.filt || 800;
+      filter.Q.value = 0.5;
+      analyser.disconnect();
+      analyser.connect(filter);
+      filter.connect(gainNode);
+
+      preset.freqs.forEach(function (freq) {
+        var osc = audioCtx.createOscillator();
+        osc.type = preset.wave || 'sine';
+        osc.frequency.value = freq;
+        var lfo = audioCtx.createOscillator();
+        var lfoGain = audioCtx.createGain();
+        lfo.frequency.value = 0.1 + Math.random() * 0.2;
+        lfoGain.gain.value = 0.3;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        lfo.start();
+        osc.connect(analyser);
+        osc.start();
+        activeOscillators.push(osc, lfo);
+      });
+      gainNode.gain.setTargetAtTime(preset.vol, audioCtx.currentTime, 0.8);
+      showBars();
+      visualize();
+    }
+
+    // === 文件播放 ===
+    function playFile(url) {
+      initAudioCtx();
+      audioEl.src = url;
+      audioEl.load();
+      audioEl.play().then(function () {
+        showBars();
+        visualize();
+      }).catch(function () {
+        panelTitle.textContent = '加载失败，切换下一首';
+        setTimeout(function () { nextTrack(); }, 1500);
+      });
+      audioEl.onended = function () { nextTrack(); };
+    }
+
+    // === 播放控制 ===
+    function playTrack(idx) {
+      stopAudio();
+      var t = playlist[idx];
+      if (!t) return;
+      currentIdx = idx;
+      panelTitle.textContent = t.title;
+      isPlaying = true;
+      updatePlayIcon(true);
+      fab.classList.add('playing');
+      if (t.type === 'synth') {
+        playSynth(synthPresets[t.preset] || synthPresets.ambient);
+      } else {
+        playFile(t.url);
+      }
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        stopAudio(); isPlaying = false;
+        updatePlayIcon(false); fab.classList.remove('playing');
+        panelTitle.textContent = '已暂停';
+      } else if (currentIdx >= 0) {
+        playTrack(currentIdx);
+      } else {
+        playTrack(0);
+      }
+    }
+
+    function nextTrack() {
+      if (!playlist.length) return;
+      playTrack(isRandom ? Math.floor(Math.random() * playlist.length) : (currentIdx + 1) % playlist.length);
+    }
+    function prevTrack() {
+      if (!playlist.length) return;
+      playTrack(isRandom ? Math.floor(Math.random() * playlist.length) : (currentIdx - 1 + playlist.length) % playlist.length);
+    }
+
+    // === 事件 ===
+    fab.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.toggle('open'); });
+    playPauseBtn.addEventListener('click', function (e) { e.stopPropagation(); togglePlay(); });
+    document.getElementById('music-next').addEventListener('click', function (e) { e.stopPropagation(); nextTrack(); });
+    document.getElementById('music-prev').addEventListener('click', function (e) { e.stopPropagation(); prevTrack(); });
+    document.getElementById('music-random').addEventListener('click', function (e) {
+      e.stopPropagation(); isRandom = !isRandom; e.currentTarget.classList.toggle('active', isRandom);
+    });
+    document.addEventListener('click', function (e) {
+      if (!panel.contains(e.target) && e.target !== fab && !fab.contains(e.target)) panel.classList.remove('open');
+    });
+    var sidebarBtn = document.getElementById('sidebar-music-btn');
+    if (sidebarBtn) sidebarBtn.addEventListener('click', togglePlay);
+  })();
+</script>
+
+<style>
+  :global(.music-fab) {
+    position: fixed;
+    left: 24px;
+    bottom: 30px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    color: var(--text);
+    cursor: pointer;
+    z-index: calc(var(--z-toggle) - 1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  :global([data-theme="dark"]) .music-fab {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(0,64,255,0.05);
+  }
+  :global(.music-fab):hover {
+    transform: scale(1.1);
+    border-color: rgba(0,64,255,0.35);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 0 30px rgba(0,64,255,0.08);
+  }
+  :global(.music-fab.playing) { animation: music-pulse 2s ease-in-out infinite; }
+  @keyframes music-pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0, 64, 255, 0.2); }
+    50%      { box-shadow: 0 4px 28px rgba(0, 64, 255, 0.45); }
+  }
+  @media (min-width: 768px) {
+    :global(.music-fab) { left: 32px; bottom: 30px; width: 42px; height: 42px; font-size: 16px; }
+  }
+  @media (max-width: 767px) { :global(.music-fab) { display: none; } }
+
+  :global(.music-panel) {
+    position: fixed;
+    left: 24px;
+    bottom: 72px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--nav-edge);
+    border-radius: 16px;
+    padding: 12px 16px;
+    z-index: calc(var(--z-toggle) - 1);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 150px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  :global(.music-panel.open) { display: flex; }
+  :global(.music-panel-title) {
+    font-size: 0.8rem; opacity: 0.7; text-align: center;
+    color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  :global(.music-panel-actions) { display: flex; justify-content: center; gap: 8px; }
+  :global(.music-panel-actions) button {
+    width: 30px; height: 30px; border: none; border-radius: 50%;
+    background: rgba(128,128,128,0.1); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; transition: background 0.2s, transform 0.15s;
+  }
+  :global(.music-panel-actions) button:hover { background: rgba(128,128,128,0.25); transform: scale(1.1); }
+  :global(.music-panel-actions) button.active { background: #0040ff; color: #fff; }
+  @media (max-width: 767px) { :global(.music-panel) { display: none !important; } }
+  @media (min-width: 768px) { :global(.music-panel) { left: 32px; bottom: 78px; } }
+</style>

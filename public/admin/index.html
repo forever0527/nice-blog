@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内容管理后台</title>
+</head>
+<body>
+  <!-- 先放挂载容器，确保脚本执行时它已经存在 -->
+  <div id="nc-root"></div>
+
+  <!-- 脚本放到 body 末尾，或加 defer 属性，保证DOM加载完成后再执行 -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/netlify-cms@^2.10.192/dist/netlify-cms.js"></script>
+
+  <!-- 辅助脚本 -->
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

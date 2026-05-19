@@ -1,0 +1,69 @@
+---
+// 真雪花效果 — SVG 雪花 + 旋转 + 摇摆
+---
+<div class="snow-container" id="snow-container"></div>
+
+<script>
+var snowSVG = '<svg viewBox="0 0 60 60" width="100%" height="100%">' +
+'<g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round">' +
+// 六条主干
+'<line x1="30" y1="30" x2="30" y2="5"/>' +
+'<line x1="30" y1="30" x2="7.5" y2="18"/>' +
+'<line x1="30" y1="30" x2="7.5" y2="42"/>' +
+'<line x1="30" y1="30" x2="30" y2="55"/>' +
+'<line x1="30" y1="30" x2="52.5" y2="42"/>' +
+'<line x1="30" y1="30" x2="52.5" y2="18"/>' +
+// 对称侧枝 上层
+'<path d="M30 18 L24 14 M30 18 L36 14"/>' +
+'<path d="M16 21 L10 20 M16 21 L13 15"/>' +
+'<path d="M16 39 L10 40 M16 39 L13 45"/>' +
+// 对称侧枝 下层
+'<path d="M30 42 L24 46 M30 42 L36 46"/>' +
+'<path d="M44 39 L50 40 M44 39 L47 45"/>' +
+'<path d="M44 21 L50 20 M44 21 L47 15"/>' +
+'</g>' +
+// 中心实心小圆
+'<circle cx="30" cy="30" r="3" fill="#fff"/>' +
+'</svg>';
+
+  function createSnowflake() {
+    var flake = document.createElement('div');
+    flake.className = 'snowflake';
+    flake.innerHTML = snowSVG;
+
+    var size = Math.random() * 16 + 8;
+    var left = Math.random() * window.innerWidth;
+    var dur = Math.random() * 5 + 5;
+    var delay = Math.random() * 6;
+    var sway = (Math.random() - 0.5) * 60;
+    var blur = Math.random() < 0.3 ? 'blur(0.8px)' : 'none';
+    var opacity = Math.random() * 0.5 + 0.35;
+
+    flake.style.width = size + 'px';
+    flake.style.height = size + 'px';
+    flake.style.left = left + 'px';
+    flake.style.setProperty('--dur', dur + 's');
+    flake.style.setProperty('--delay', delay + 's');
+    flake.style.setProperty('--sway', sway + 'px');
+    flake.style.opacity = opacity;
+    flake.style.filter = blur;
+
+    return flake;
+  }
+
+  function initSnow() {
+    var container = document.getElementById('snow-container');
+    var isDark = document.documentElement.dataset.theme === 'dark';
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (isDark) {
+      for (var i = 0; i < 40; i++) {
+        container.appendChild(createSnowflake());
+      }
+    }
+  }
+
+  initSnow();
+  window.addEventListener('theme-change', initSnow);
+</script>
