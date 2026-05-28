@@ -1,5 +1,5 @@
 ---
-// Footer.astro
+import Icon from './Icon.astro';
 const currentYear = new Date().getFullYear();
 ---
 
@@ -7,7 +7,7 @@ const currentYear = new Date().getFullYear();
   <div class="footer-inner">
     <div class="footer-info">
       <h3>About This Site</h3>
-      <i class="fas fa-shopping-cart"></i> 商店:
+      <Icon name="shopping-cart" size={14} /> 商店:
       <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a>
       <span style="margin:0 5px">|</span>
       <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a>
@@ -22,7 +22,7 @@ const currentYear = new Date().getFullYear();
       <div class="tail">
         <a href="/archive">
            <!-- 图片路径示例 -->
-          <img src="/img/laa/char.png" alt="尾句" style="height:auto; width:300px; filter: invert(var(--invert-rate, 1));">
+          <img src="/img/laa/char.webp" alt="尾句" style="height:auto; width:300px; filter: invert(var(--invert-rate, 1));">
         </a>
       </div>
       &copy; 2025 - {currentYear + 1} True Blue. All Rights Reserved. beat:2.0.1

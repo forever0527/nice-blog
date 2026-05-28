@@ -4,7 +4,7 @@ desc: 从零开始，利用 Astro 的 Islands 架构打造一个轻量、高速�
 date: 2026-05-15
 tag: 前端开发
 color: "#ff5d01"
-img: /img/bg/1.png
+img: /img/bg/1.webp
 ---
 Astro 是一个为了速度而生的静态站点生成器。它默认不向客户端发送任何 JavaScript，只在需要交互时按需加载。这种 Islands 架构让页面保持极致轻盈。
 

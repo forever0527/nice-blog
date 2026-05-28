@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
+import Icon from '../components/Icon.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
@@ -18,6 +19,8 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   <Header />
 
   <main class="blg" id="blog-content">
+    <div class="blg-layout">
+    <div class="blg-main">
     <!-- 功能栏 -->
     <div class="blg-bar">
       <div class="blg-tags" id="blg-tags">
@@ -25,7 +28,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
         {allTags.map(tag => <button class="blg-chip" data-tag={tag}>{tag}</button>)}
       </div>
       <div class="blg-search">
-        <i class="fas fa-search blg-search-icon"></i>
+        <span class="blg-search-icon"><Icon name="search" size={13} /></span>
         <input type="text" class="blg-search-input" id="blg-search" placeholder="搜索文章..." />
       </div>
       <span class="blg-num" id="blg-num">{posts.length} 篇</span>
@@ -40,7 +43,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
           <article class="blg-card" data-tag={tag} data-page={page}>
             <a href={'/blog/' + post.slug} class="blg-link">
               <div class="blg-img">
-                <img src={img || '/img/bg/1.png'} alt={title} loading="lazy" />
+                <img src={img || '/img/bg/1.webp'} alt={title} loading="lazy" />
               </div>
               <div class="blg-overlay">
                 <span class="blg-tag" style={`background:${color||'#0040ff'}`}>{tag}</span>
@@ -57,7 +60,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     <!-- 空状态 -->
     <div class="blg-empty" id="blg-empty" style="display:none">
       <div class="empty-art">
-        <span class="empty-icon"><i class="fas fa-mug-hot"></i></span>
+        <span class="empty-icon"><Icon name="mug-hot" size={36} /></span>
         <span class="empty-dot"></span>
         <span class="empty-dot"></span>
         <span class="empty-dot"></span>
@@ -69,14 +72,46 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     <!-- 数字导航 -->
     {totalPages > 1 && (
       <nav class="blg-pager" id="blg-pager">
-        <button class="blg-pg-btn" id="blg-prev" disabled><i class="fas fa-arrow-left"></i></button>
+        <button class="blg-pg-btn" id="blg-prev" disabled><Icon name="arrow-left" size={14} /></button>
         {Array.from({length:totalPages},(_,i)=>(
           <button class={`blg-pg-num ${i===0?'on':''}`} data-page={i+1}>{i+1}</button>
         ))}
-        <button class="blg-pg-btn" id="blg-next"><i class="fas fa-arrow-right"></i></button>
+        <button class="blg-pg-btn" id="blg-next"><Icon name="arrow-right" size={14} /></button>
       </nav>
     )}
+    </div><!-- .blg-main -->
+
+    <!-- 右侧竖列：最近文章 + 有趣卡片 -->
+    <aside class="blg-sidebar" id="blg-sidebar">
+      <div class="blg-sidebar-inner">
+        <div class="blg-sidebar-section">
+          <h3 class="blg-sidebar-title">最近发布</h3>
+          <div class="blg-sidebar-list">
+            {posts.slice(0, 6).map(p => (
+              <a href={'/blog/' + p.slug} class="blg-sidebar-link">
+                <span class="blg-sidebar-tag" style={`background:${p.data.color||'#0040ff'}`}>{p.data.tag}</span>
+                <span class="blg-sidebar-text">{p.data.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div class="blg-sidebar-section">
+          <h3 class="blg-sidebar-title">有趣卡片</h3>
+          <div class="blg-fun-card" id="blg-fun-card">
+            <div class="fun-card-emoji">🥷</div>
+            <p class="fun-card-quote" id="fun-quote">代码是写给人看的，顺便能在机器上运行。</p>
+            <p class="fun-card-author">— SICP</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    </div><!-- .blg-layout -->
   </main>
+
+  <!-- 竖列展开按钮 — 上滑出现，位于回到顶部按钮上方 -->
+  <button class="blg-sidebar-toggle" id="blg-sidebar-toggle" aria-label="展开侧边栏" title="展开侧边栏">
+    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h12v2H4zm0 5h8v2H4z"/></svg>
+  </button>
 
   <Footer />
   <FloatingButtons />
@@ -121,7 +156,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
       document.getElementById('blg-prev').disabled=page===1;
       document.getElementById('blg-next').disabled=page===t;
       document.getElementById('blg-empty').style.display=list.length===0?'flex':'none';
-      if(doScroll) window.scrollTo({top:0,behavior:'smooth'});
+      if(doScroll){var target=document.getElementById('blog-content');if(target){var top=target.getBoundingClientRect().top+window.scrollY-20;window.scrollTo({top:top,behavior:'smooth'});}}
     }
 
     // `/` 键聚焦搜索
@@ -137,26 +172,139 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     render(false);
 
     // 滚动渐显 — 功能栏、卡片、分页先后淡入
+    // rootMargin 负值使元素需进入视口更深才触发，确保波浪隔开足够距离
     var revealEls = document.querySelectorAll('.blg-bar,.blg-grid,.blg-pager');
     var revealObs = new IntersectionObserver(function(entries){
       entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
-    },{threshold:0.08});
+    },{threshold:0.08,rootMargin:'-40px 0px 0px 0px'});
     revealEls.forEach(function(el){ revealObs.observe(el); });
+  })();
+
+  // === 右侧竖列展开/收起 + 滚动显示按钮 ===
+  (function () {
+    var sidebar = document.getElementById('blg-sidebar');
+    var toggleBtn = document.getElementById('blg-sidebar-toggle');
+    var blgContent = document.getElementById('blog-content');
+    if (!sidebar || !toggleBtn) return;
+
+    toggleBtn.addEventListener('click', function () {
+      var isOpen = sidebar.classList.toggle('open');
+      if (blgContent) blgContent.classList.toggle('has-sidebar', isOpen);
+      toggleBtn.innerHTML = isOpen
+        ? '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h12v2H4zm0 5h8v2H4z"/></svg>';
+      toggleBtn.setAttribute('aria-label', isOpen ? '收起侧边栏' : '展开侧边栏');
+    });
+
+    // 滚动显示/隐藏按钮（和回到顶部按钮同步）
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 300) {
+        toggleBtn.classList.add('show');
+      } else {
+        toggleBtn.classList.remove('show');
+      }
+    }, { passive: true });
+  })();
+
+  // === 有趣卡片随机语录 ===
+  (function () {
+    var quotes = [
+      { text:'代码是写给人看的，顺便能在机器上运行。', author:'SICP' },
+      { text:'世界上只有两种东西是无限的：宇宙和人类的愚蠢。', author:'爱因斯坦' },
+      { text:'任何足够先进的技术，都与魔法无异。', author:'克拉克' },
+      { text:'简单是终极的复杂。', author:'达芬奇' },
+      { text:'你不能通过盯着路来预测未来。', author:'彼得·德鲁克' },
+      { text:'生活就像骑自行车，要想保持平衡就得不断前进。', author:'爱因斯坦' },
+      { text:'最大的风险就是不冒任何风险。', author:'扎克伯格' },
+      { text:'做或不做，没有尝试。', author:'尤达大师' },
+    ];
+    var i = Math.floor(Math.random() * quotes.length);
+    var q = quotes[i];
+    var quoteEl = document.getElementById('fun-quote');
+    var authorEl = document.querySelector('.fun-card-author');
+    if (quoteEl) quoteEl.textContent = q.text;
+    if (authorEl) authorEl.textContent = '— ' + q.author;
   })();
 </script>
 
 <style>
-  .blg { max-width:1060px; margin:0 auto; padding:80px 22px 60px; }
+  .blg { max-width:1060px; margin:0 auto; padding:100px 22px 60px; transition:max-width 0.4s cubic-bezier(0.32,1,0.32,1); }
+  .blg.has-sidebar { max-width:1320px; }
+
+  /* === 桌面端双栏 === */
+  .blg-layout { display:flex; gap:32px; align-items:flex-start; }
+  .blg-main { flex:1; min-width:0; }
+
+  /* === 右侧竖列 — 宽度展开带动主内容左移 === */
+  .blg-sidebar {
+    width:0; flex-shrink:0; position:sticky; top:100px;
+    overflow:hidden; opacity:0;
+    transition:width 0.4s cubic-bezier(0.32,1,0.32,1), opacity 0.35s ease;
+  }
+  .blg-sidebar.open { width:240px; opacity:1; overflow:visible; }
+  .blg-sidebar-inner { display:flex; flex-direction:column; gap:24px; }
+  .blg-sidebar-section {
+    background:rgba(255,255,255,0.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.3); border-radius:16px; padding:18px 16px;
+  }
+  :global([data-theme="dark"]) .blg-sidebar-section {
+    background:rgba(30,41,59,0.5); border-color:rgba(255,255,255,0.06);
+  }
+  .blg-sidebar-title { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; opacity:0.35; margin-bottom:12px; }
+  .blg-sidebar-list { display:flex; flex-direction:column; gap:2px; }
+  :global(.blg-sidebar-link) {
+    display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px;
+    text-decoration:none; color:var(--text); transition:background 0.2s;
+  }
+  :global(.blg-sidebar-link):hover { background:rgba(128,128,128,0.06); }
+  :global(.blg-sidebar-tag) {
+    display:inline-block; padding:2px 6px; border-radius:4px; color:#fff;
+    font-size:0.58rem; font-weight:700; flex-shrink:0;
+  }
+  :global(.blg-sidebar-text) {
+    font-size:0.78rem; opacity:0.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+
+  /* 有趣卡片 */
+  .blg-fun-card { text-align:center; }
+  .fun-card-emoji { font-size:2rem; margin-bottom:8px; }
+  .fun-card-quote { font-size:0.82rem; line-height:1.6; opacity:0.7; margin-bottom:6px; }
+  .fun-card-author { font-size:0.7rem; opacity:0.4; }
+
+  /* 竖列展开按钮 */
+  :global(.blg-sidebar-toggle) {
+    position:fixed; right:30px; bottom:80px; width:42px; height:42px;
+    border:1px solid rgba(255,255,255,0.22); border-radius:50%;
+    background:rgba(255,255,255,0.15); backdrop-filter:blur(10px) saturate(140%);
+    -webkit-backdrop-filter:blur(10px) saturate(140%);
+    color:var(--text); cursor:pointer; z-index:calc(var(--z-toggle) - 1);
+    box-shadow:0 4px 16px rgba(0,0,0,0.1);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; transform:translateY(20px);
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  :global([data-theme="dark"]) .blg-sidebar-toggle {
+    background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.1);
+    box-shadow:0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(0,64,255,0.05);
+  }
+  :global(.blg-sidebar-toggle.show) { opacity:1; visibility:visible; transform:translateY(0); }
+  :global(.blg-sidebar-toggle):hover {
+    border-color:rgba(0,64,255,0.35); box-shadow:0 8px 24px rgba(0,0,0,0.15), 0 0 30px rgba(0,64,255,0.08);
+  }
+  @media (min-width:768px) {
+    :global(.blg-sidebar-toggle) { right:47px; bottom:86px; }
+  }
 
   /* === 功能栏 === */
   /* 功能栏 + 卡片网格 — 初始隐藏，上滑渐显 */
-  .blg-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:36px; opacity:0; transform:translateY(24px); transition:opacity 0.7s ease,transform 0.7s ease; }
+  /* translateY 用 vh 确保各尺寸屏幕都离波浪足够远 */
+  .blg-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:36px; opacity:0; transform:translateY(8vh); transition:opacity 0.7s ease,transform 0.7s ease; }
   .blg-bar.visible { opacity:1; transform:translateY(0); }
 
-  .blg-grid { opacity:0; transform:translateY(24px); transition:opacity 0.7s ease 0.15s,transform 0.7s ease 0.15s; }
+  .blg-grid { opacity:0; transform:translateY(6vh); transition:opacity 0.7s ease 0.15s,transform 0.7s ease 0.15s; }
   .blg-grid.visible { opacity:1; transform:translateY(0); }
 
-  .blg-pager { opacity:0; transform:translateY(24px); transition:opacity 0.7s ease 0.3s,transform 0.7s ease 0.3s; }
+  .blg-pager { opacity:0; transform:translateY(4vh); transition:opacity 0.7s ease 0.3s,transform 0.7s ease 0.3s; }
   .blg-pager.visible { opacity:1; transform:translateY(0); }
   .blg-tags { display:flex; flex-wrap:wrap; gap:8px; }
 
@@ -227,6 +375,23 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
       0 0 80px rgba(0,64,255,0.12),
       0 0 160px rgba(0,150,255,0.06);
   }
+  /* 移动端触摸反馈 */
+  @media (hover: none) {
+    .blg-link:active {
+      transform:translateY(-3px);
+      box-shadow:
+        0 8px 24px rgba(0,0,0,0.08),
+        0 0 30px rgba(0,64,255,0.06),
+        0 0 60px rgba(0,100,255,0.03);
+    }
+    :global([data-theme="dark"]) .blg-link:active {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 8px 24px rgba(0,0,0,0.3),
+        0 0 40px rgba(0,64,255,0.08),
+        0 0 80px rgba(0,150,255,0.04);
+    }
+  }
 
   /* 图片 */
   .blg-img { height:240px; overflow:hidden; flex-shrink:0; }
@@ -268,12 +433,21 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
 
   /* === 移动端优化 === */
   @media (max-width:680px) {
-    .blg { padding:28px 16px 48px; }
+    .blg { padding:12vh 16px 48px; }
+    .blg-layout { display:block; }
+    .blg-sidebar { display:none; }
+    :global(.blg-sidebar-toggle) { display:none !important; }
     .blg-grid { grid-template-columns:1fr; }
     .blg-img { height:220px; }
-    .blg-bar { gap:14px; }
+    .blg-bar { gap:14px; transform:translateY(10vh); }
+    .blg-bar.visible { transform:translateY(0); }
     .blg-search-input { width:140px; }
     .blg-search-input:focus { width:170px; }
     .blg-chip { padding:7px 16px; font-size:0.82rem; }
+  }
+  @media (min-width:681px) and (max-width:960px) {
+    .blg-layout { display:block; }
+    .blg-sidebar { display:none; }
+    :global(.blg-sidebar-toggle) { display:none !important; }
   }
 </style>

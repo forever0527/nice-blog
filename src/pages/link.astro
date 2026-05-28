@@ -2,11 +2,206 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Snow from '../components/Snow.astro';
+import FloatingButtons from '../components/FloatingButtons.astro';
+
+const links = [
+  { name: 'GitHub', desc: '代码托管与协作平台', url: 'https://github.com' },
+  { name: 'Vercel', desc: '前端部署与边缘计算', url: 'https://vercel.com' },
+  { name: 'Astro', desc: '高性能静态站点框架', url: 'https://astro.build' },
+  { name: 'Dribbble', desc: '设计师作品展示社区', url: 'https://dribbble.com' },
+  { name: 'Unsplash', desc: '免费高分辨率图片库', url: 'https://unsplash.com' },
+  { name: 'CodePen', desc: '在线前端代码与分享', url: 'https://codepen.io' },
+];
 ---
 
-<BaseLayout title="Links">
-  <Snow />
+<BaseLayout title="Links - 懒得取名">
   <Header />
+
+  <main class="link-page">
+    <header class="link-hero">
+      <p class="link-eyebrow">Directory</p>
+      <h1 class="link-title">友链</h1>
+      <p class="link-desc">值得常访的角落，数字世界里的邻居。</p>
+    </header>
+
+    <nav class="link-grid" aria-label="友情链接">
+      {links.map(l => (
+        <a href={l.url} target="_blank" rel="noopener noreferrer" class="link-card">
+          <span class="link-card-icon" aria-hidden="true">{l.name.charAt(0)}</span>
+          <span class="link-card-body">
+            <span class="link-card-name">{l.name}</span>
+            <span class="link-card-desc">{l.desc}</span>
+          </span>
+          <svg class="link-card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      ))}
+    </nav>
+  </main>
+
   <Footer />
+  <FloatingButtons />
 </BaseLayout>
+
+<style>
+  :global(.theme-header-decor) { display: none !important; }
+  :global(.snow-container) { display: none !important; }
+
+  /* Page — 夸张极简：大量留白 */
+  .link-page {
+    width: 100%;
+    min-height: calc(100vh - 76px);
+    background-color: var(--bg);
+    padding: clamp(80px, 14vh, 140px) 48px 120px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Hero */
+  .link-hero {
+    margin-bottom: clamp(56px, 10vh, 96px);
+  }
+  .link-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--text);
+    opacity: 0.35;
+    margin-bottom: 16px;
+  }
+  .link-title {
+    font-family: 'Georgia','Noto Serif SC',serif;
+    font-size: clamp(3rem, 7vw, 5rem);
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .link-desc {
+    font-size: 0.95rem;
+    color: var(--text);
+    opacity: 0.4;
+    letter-spacing: 1px;
+    line-height: 1.7;
+    max-width: 420px;
+  }
+
+  /* Grid */
+  .link-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Card */
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: rgba(128,128,128,0.04);
+    border: 1px solid rgba(128,128,128,0.08);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  :global([data-theme="dark"]) .link-card {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+  }
+  :global([data-theme="dark"]) .link-card {
+    border-color: rgba(255,255,255,0.06);
+  }
+
+  .link-card:hover {
+    border-color: rgba(0,64,255,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,64,255,0.06);
+  }
+  :global([data-theme="dark"]) .link-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,64,255,0.12);
+  }
+
+  .link-card:focus-visible {
+    outline: 2px solid #0040ff;
+    outline-offset: 2px;
+  }
+
+  /* Icon — 首字母 */
+  .link-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(128,128,128,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia',serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    opacity: 0.45;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s, opacity 0.2s;
+  }
+  .link-card:hover .link-card-icon {
+    background: rgba(0,64,255,0.1);
+    color: #0040ff;
+    opacity: 1;
+  }
+
+  /* Body */
+  .link-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .link-card-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .link-card-desc {
+    font-size: 0.78rem;
+    opacity: 0.4;
+    letter-spacing: 0.5px;
+  }
+
+  /* Arrow */
+  .link-card-arrow {
+    flex-shrink: 0;
+    opacity: 0.18;
+    transition: opacity 0.2s, transform 0.2s ease;
+  }
+  .link-card:hover .link-card-arrow {
+    opacity: 0.5;
+    transform: translate(2px, -2px);
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .link-page {
+      padding: clamp(48px, 10vh, 72px) 20px 80px;
+    }
+    .link-title {
+      font-size: clamp(2.2rem, 9vw, 3.5rem);
+    }
+    .link-card {
+      padding: 16px 18px;
+    }
+  }
+
+  /* 无障碍 */
+  @media (prefers-reduced-motion: reduce) {
+    .link-card,
+    .link-card-icon,
+    .link-card-arrow {
+      transition: none;
+    }
+  }
+</style>

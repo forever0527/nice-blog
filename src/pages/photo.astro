@@ -2,11 +2,425 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Snow from '../components/Snow.astro';
+import FloatingButtons from '../components/FloatingButtons.astro';
+
+const photos = [
+  { src: '/img/bg/1.webp', title: '城市 · 黄昏', year: '2025', month: '01', day: '15' },
+  { src: '/img/bg/2.webp', title: '山间 · 晨雾', year: '2025', month: '02', day: '08' },
+  { src: '/img/bg/3.webp', title: '海边 · 日落', year: '2025', month: '03', day: '22' },
+  { src: '/img/bg/4.webp', title: '林间 · 小径', year: '2025', month: '04', day: '10' },
+  { src: '/img/bg/5.webp', title: '古镇 · 巷口', year: '2025', month: '05', day: '17' },
+  { src: '/img/bg/0-1.webp', title: '雪山 · 远眺', year: '2025', month: '06', day: '03' },
+  { src: '/img/bg/0-2.webp', title: '湖光 · 倒影', year: '2025', month: '07', day: '29' },
+  { src: '/img/bg/0-3.webp', title: '秋日 · 落叶', year: '2025', month: '08', day: '14' },
+];
+
+const N = photos.length;
+const COPIES = 6;
+const pool = Array.from({ length: COPIES }, () => photos).flat();
+
+const poses = [
+  { x: 5,  r: -8,  z: 1 },
+  { x: 16, r: -4,  z: 2 },
+  { x: 27, r: 2,   z: 3 },
+  { x: 38, r: -6,  z: 4 },
+  { x: 49, r: 4,   z: 5 },
+  { x: 60, r: -3,  z: 4 },
+  { x: 71, r: 6,   z: 3 },
+  { x: 82, r: -2,  z: 2 },
+];
 ---
 
-<BaseLayout title="Photo">
-  <Snow />
+<BaseLayout title="Photo - 懒得取名">
   <Header />
+
+  <main class="photo-page desktop-layout" id="photo-page">
+    <section class="slant-hero" id="slant-hero">
+      <div class="slider" id="slider">
+        <div class="slide-track" id="slide-track">
+          {pool.map((p, i) => {
+            const parity = i % 2 === 0 ? 'even' : 'odd';
+            return (
+              <article class={`slide ${parity}`} data-src={p.src} data-group={String(i % N)}>
+                <div class="slide-image">
+                  <img src={p.src} alt={p.title} loading="lazy" decoding="async" />
+                </div>
+                <p class="slide-overlay">
+                  <span class="slide-title">{p.title}</span>
+                  <span class="slide-date">{p.year}.{p.month}.{p.day}</span>
+                </p>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <main class="photo-page mobile-layout" id="photo-page-m">
+    <div class="cascade-stage" id="cascade-stage">
+      {photos.map((p, i) => {
+        const pose = poses[i];
+        return (
+          <article class="cascade-card" id={`card-${i}`} data-index={String(i)} data-src={p.src}
+            style={`--x:${pose.x}%;--r:${pose.r}deg;--z:${pose.z};--i:${i}`}>
+            <div class="cascade-card-inner">
+              <img src={p.src} alt={p.title} loading="lazy" decoding="async" />
+              <div class="cascade-card-text">
+                <span class="cascade-card-title">{p.title}</span>
+                <span class="cascade-card-date">{p.year}.{p.month}.{p.day}</span>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    <div class="cascade-overlay" id="cascade-overlay"></div>
+    <button class="cascade-close" id="cascade-close" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </main>
+
   <Footer />
+  <FloatingButtons />
 </BaseLayout>
+
+<script>
+  (function () {
+    if (window.innerWidth < 769) return;
+    var slider = document.getElementById('slider');
+    var track = document.getElementById('slide-track');
+    if (!slider || !track) return;
+
+    var N = 8;
+    var STEP = 410;
+    var SEQ_W = N * STEP;
+
+    var currentX = -(N * STEP * 2);
+    var targetX = currentX;
+    var raf;
+
+    var dragging = false, hasDragged = false;
+    var dragStartX = 0, dragStartTarget = 0, lastMouseX = 0;
+
+    var mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var reduced = mqReduced.matches;
+    mqReduced.addEventListener('change', function (e) { reduced = e.matches; });
+
+    var slides = track.querySelectorAll('.slide');
+
+    function render() {
+      track.style.transform = 'translate3d(' + currentX + 'px, 0, 0)';
+    }
+
+    function parallax() {
+      var winW = window.innerWidth;
+      var vc = -currentX + winW / 2;
+      for (var i = 0; i < slides.length; i++) {
+        var s = slides[i];
+        var left = s.offsetLeft + currentX;
+        if (left < -500 || left > winW + 500) continue;
+        var sc = s.offsetLeft + s.offsetWidth / 2;
+        var px = (sc - vc) * -0.25;
+        var img = s.querySelector('img');
+        if (img) img.style.transform = 'translateX(' + px + 'px) scale(2.25)';
+      }
+    }
+
+    function loop() {
+      if (currentX > -SEQ_W * 1) { currentX -= SEQ_W; targetX -= SEQ_W; }
+      if (currentX < -SEQ_W * 4) { currentX += SEQ_W; targetX += SEQ_W; }
+      if (reduced) { currentX = targetX; }
+      else { currentX += (targetX - currentX) * 0.05; }
+      render();
+      parallax();
+      raf = requestAnimationFrame(loop);
+    }
+
+    slider.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      var r = slider.getBoundingClientRect();
+      var bandTop = r.top + r.height * 0.35;
+      var bandBot = r.bottom - r.height * 0.35;
+      if (e.clientY < bandTop || e.clientY > bandBot) return;
+      e.preventDefault();
+      targetX -= Math.max(-150, Math.min(e.deltaY * 1.75, 150));
+    }, { passive: false });
+
+    slider.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      dragging = true; hasDragged = false;
+      dragStartX = e.clientX; lastMouseX = e.clientX; dragStartTarget = targetX;
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      targetX += (e.clientX - lastMouseX) * 2;
+      lastMouseX = e.clientX;
+      if (Math.abs(targetX - dragStartTarget) > 5) hasDragged = true;
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      setTimeout(function () { hasDragged = false; }, 100);
+    }
+    document.addEventListener('mouseup', endDrag);
+    slider.addEventListener('mouseleave', endDrag);
+    slider.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    slider.addEventListener('touchstart', function (e) {
+      dragging = true; hasDragged = false;
+      dragStartX = e.touches[0].clientX; dragStartTarget = targetX;
+    });
+    slider.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      targetX = dragStartTarget + (e.touches[0].clientX - dragStartX) * 1.5;
+      if (Math.abs(e.touches[0].clientX - dragStartX) > 5) hasDragged = true;
+    });
+    slider.addEventListener('touchend', function () {
+      dragging = false;
+      setTimeout(function () { hasDragged = false; }, 100);
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (window.innerWidth < 769) return;
+        while (currentX > -SEQ_W * 1) currentX -= SEQ_W;
+        while (currentX < -SEQ_W * 4) currentX += SEQ_W;
+        targetX = currentX;
+        render();
+        parallax();
+      }, 150);
+    });
+
+    raf = requestAnimationFrame(loop);
+  })();
+</script>
+
+<script>
+  (function () {
+    var stage = document.getElementById('cascade-stage');
+    var overlay = document.getElementById('cascade-overlay');
+    var closeBtn = document.getElementById('cascade-close');
+    if (!stage || !overlay || !closeBtn) return;
+    var cards = stage.querySelectorAll('.cascade-card');
+    var activeIdx = -1;
+    function openCard(idx) {
+      activeIdx = idx;
+      cards.forEach(function (c, i) { i === idx ? c.classList.add('active') : c.classList.add('dimmed'); });
+      overlay.classList.add('show'); closeBtn.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeCard() {
+      activeIdx = -1;
+      cards.forEach(function (c) { c.classList.remove('active', 'dimmed'); });
+      overlay.classList.remove('show'); closeBtn.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    cards.forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var idx = parseInt(card.dataset.index);
+        if (activeIdx === idx) { closeCard(); return; }
+        if (activeIdx >= 0) closeCard();
+        setTimeout(function () { openCard(idx); }, 80);
+      });
+    });
+    overlay.addEventListener('click', closeCard);
+    closeBtn.addEventListener('click', closeCard);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && activeIdx >= 0) closeCard(); });
+  })();
+</script>
+
+<style>
+  :global(.theme-header-decor) { display: none !important; }
+  :global(.snow-container) { display: none !important; }
+
+  .photo-page {
+    width: 100%;
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      transparent, transparent 47px,
+      rgba(128,128,128,0.08) 47px, rgba(128,128,128,0.08) 48px
+    );
+    background-size: 100% 48px;
+  }
+  :global([data-theme="dark"]) .photo-page {
+    background-image: repeating-linear-gradient(
+      transparent, transparent 47px,
+      rgba(255,255,255,0.06) 47px, rgba(255,255,255,0.06) 48px
+    );
+    background-size: 100% 48px;
+  }
+
+  .mobile-layout { display: none; }
+  .desktop-layout {
+    height: calc(100vh - 76px);
+    overflow: clip;
+    position: relative;
+  }
+  .slant-hero { height: 100%; }
+
+  .slider {
+    position: absolute;
+    top: 10vh;
+    left: -20%;
+    width: 140%;
+    bottom: 0;
+    overflow: visible;
+    user-select: none;
+    cursor: grab;
+    transform: rotate(15deg);
+    transform-origin: center center;
+  }
+  .slider:active { cursor: grabbing; }
+
+  .slide-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    will-change: transform;
+  }
+
+  .slide {
+    flex-shrink: 0;
+    width: 350px;
+    margin: 0 30px;
+    position: relative;
+    top: 50%;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .slide.even { transform: translateY(-50%) translateY(-4vh); }
+  .slide.odd  { transform: translateY(-50%) translateY(4vh); }
+
+  .slide-image {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+  .slide-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+    transform: scale(2.25);
+    user-select: none;
+  }
+
+  .slide-overlay {
+    margin: 4px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .slide:hover .slide-overlay { opacity: 1; }
+
+  .slide-title {
+    font-family: 'Georgia','Noto Serif SC',serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--text);
+  }
+  .slide-date {
+    font-family: 'Georgia',serif;
+    font-size: 0.7rem;
+    opacity: 0.5;
+    font-style: italic;
+    letter-spacing: 1px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slider { transform: none; width: 100%; left: 0; top: 0; bottom: 0; }
+    .slide-image img { transform: scale(1); }
+    .slide.even, .slide.odd { transform: translateY(-50%); }
+  }
+
+  @media (max-width: 768px) {
+    .desktop-layout { display: none; }
+    .mobile-layout { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+
+    .cascade-stage {
+      position: relative; width: 96vw; height: 400px;
+      display: flex; align-items: center; justify-content: center; z-index: 1;
+    }
+    .cascade-card {
+      position: absolute; width: 180px;
+      transition: transform .5s cubic-bezier(.32,1,.32,1), filter .45s, opacity .45s, z-index 0s .3s;
+      transform: translateX(calc(var(--x) - 50%)) rotate(var(--r)) translateY(calc(var(--i) * 4px - 12px));
+      z-index: var(--z); cursor: pointer;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .cascade-card.dimmed { cursor: default; }
+    .cascade-card.active { cursor: default; }
+    .cascade-card-inner {
+      display: block; width: 100%;
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
+    }
+    :global([data-theme="dark"]) .cascade-card-inner {
+      box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .cascade-card img { display: block; width: 100%; height: 250px; object-fit: cover; }
+    .cascade-card-text { padding: 10px 14px 12px; background: #fff; }
+    :global([data-theme="dark"]) .cascade-card-text { background: #1a2235; }
+    .cascade-card-title {
+      display: block;
+      font-family: 'Georgia','Noto Serif SC','STSong','KaiTi',serif;
+      font-size: .85rem; font-weight: 600; letter-spacing: 1.5px; color: var(--text);
+    }
+    .cascade-card-date {
+      display: block; margin-top: 2px;
+      font-family: 'Georgia',serif; font-size: .62rem; opacity: .4;
+      font-style: italic; letter-spacing: 1px; color: var(--text);
+    }
+
+    .cascade-card.active {
+      top: 50% !important; left: 50% !important;
+      transform: translate(-50%, -50%) rotate(0deg) !important;
+      z-index: 100 !important; width: 280px; cursor: default;
+      transition: transform .5s cubic-bezier(.32,1,.32,1), filter .4s, opacity .4s, width .45s cubic-bezier(.32,1,.32,1), z-index 0s 0s;
+    }
+    .cascade-card.active .cascade-card-inner {
+      box-shadow: 0 16px 48px rgba(0,0,0,.16), 0 0 0 1px rgba(0,64,255,.08), 0 0 60px rgba(0,64,255,.04);
+      max-height: 80vh; display: flex; flex-direction: column;
+    }
+    .cascade-card.active img { height: 360px; flex-shrink: 0; }
+    .cascade-card.active .cascade-card-text {
+      max-height: 120px; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cascade-card.dimmed { filter: blur(3px); opacity: .4; pointer-events: none; }
+
+    .cascade-overlay {
+      position: fixed; inset: 0; z-index: 90;
+      background: rgba(0,0,0,.35);
+      opacity: 0; pointer-events: none; transition: opacity .4s;
+    }
+    .cascade-overlay.show { opacity: 1; pointer-events: auto; }
+    .cascade-close {
+      position: fixed; top: 90px; right: 20px; z-index: 110;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.4); color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    .cascade-close.show { opacity: 1; pointer-events: auto; }
+    .cascade-close:hover { background: rgba(0,0,0,.6); transform: scale(1.1); }
+  }
+</style>

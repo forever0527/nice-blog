@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import MusicPlayer from '../components/MusicPlayer.astro';
 
 export interface Props {
   title?: string;
@@ -13,15 +12,14 @@ const { title = 'Personal Blog', description = '致力于提供极致的交互�
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content={description}>
   <title>{title}</title>
-
-  <!-- Font Awesome图标 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!--防止深色模式闪烁 (FOUC) -->
   <script is:inline>
@@ -35,7 +33,6 @@ const { title = 'Personal Blog', description = '致力于提供极致的交互�
     <div id="overlay-container"></div>
     <!-- 主内容插槽 -->
     <slot />
-    <MusicPlayer />
   </div>
 
   <!-- 网页标题彩蛋逻辑 -->

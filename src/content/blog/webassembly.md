@@ -4,7 +4,7 @@ desc: 当 JavaScript 遇到性能瓶颈时，Rust 和 WASM 能否成为前端的
 date: 2026-05-01
 tag: 黑科技
 color: "#7c3aed"
-img: /img/bg/5.png
+img: /img/bg/5.webp
 ---
 WebAssembly 让浏览器可以运行接近原生速度的代码。从图像处理到游戏引擎，WASM 正在重新定义 Web 的能力边界。
 

@@ -2,36 +2,55 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
+import Icon from '../components/Icon.astro';
+import LiquidEther from '../components/react/LiquidEther.tsx';
 
 // 个人信息 — 修改此处的数据即可更新首页内容
 const profile = {
   name: "True Blue",
   title: "很高兴和你相遇~\\(≧▽≦)/~",
   bio: "时间像一条河流载着我们顺流而下，遇到现实需要决策，但是我们无法停留 也无法回避，只能以最好的方式应对。你在 世界就在。",
-  avatar: "/img/ProfPic/1.jpg",
-  bgImage: "/img/bg/6.png",
+  avatar: "/img/ProfPic/1.webp",
+  bgImage: "/img/bg/6.webp",
 };
 
 // 备选背景图库 — 点击"更换图片"按钮循环切换
 const bgList = [
-  "/img/bg/0-1.png", "/img/bg/0-2.png", "/img/bg/0-3.png", "/img/bg/0-4.png",
-  "/img/bg/0-5.png", "/img/bg/0-6.png", "/img/bg/3.png", "/img/bg/4.png",
+  "/img/bg/0-1.webp", "/img/bg/0-2.webp", "/img/bg/0-3.webp", "/img/bg/0-4.webp",
+  "/img/bg/0-5.webp", "/img/bg/0-6.webp", "/img/bg/3.webp", "/img/bg/4.webp",
 ];
 
 // 社交链接配置
 const socialLinks = [
-  { icon: "fa-brands fa-github", url: "https://github.com/forever0527" },
-  { icon: "fab fa-telegram", url: "https://t.me/Ang258258" },
-  { icon: "fas fa-video", url: "https://v.kuaishou.com/JxZnn7h3" },
-  { icon: "fab fa-tiktok", url: "https://v.douyin.com/MjO6gtSelJQ/" },
+  { icon: "github",   label: "GitHub",   url: "https://github.com/forever0527" },
+  { icon: "telegram", label: "Telegram", url: "https://t.me/Ang258258" },
+  { icon: "video",    label: "快手",      url: "https://v.kuaishou.com/JxZnn7h3" },
+  { icon: "tiktok",   label: "抖音",      url: "https://v.douyin.com/MjO6gtSelJQ/" },
 ];
 ---
 
 <BaseLayout title={`${profile.name} - 懒得取名`}>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
   <Snow />
 
   <main class="landing-container" id="landing-bg">
+
+    <LiquidEther
+      client:load
+      colors={['#5227FF', '#7c3aed', '#B497CF']}
+      mouseForce={15}
+      cursorSize={80}
+      resolution={0.4}
+      autoDemo={true}
+      autoSpeed={0.4}
+      autoIntensity={1.8}
+      takeoverDuration={0.3}
+      autoResumeDelay={1000}
+      autoRampDuration={0.8}
+      className="liquid-bg"
+      style={{ position: 'absolute', inset: 0, zIndex: 0 }}
+    />
+
     <div class="hero-card reveal">
 
       <!-- 左侧：液态玻璃内容区 -->
@@ -54,21 +73,23 @@ const socialLinks = [
             </a>
 
             <button id="change-bg-btn" class="secondary-btn">
-              <i class="fas fa-image"></i> 更换图片
+              <Icon name="image" size={16} /> 更换图片
             </button>
           </div>
 
           <!-- 社交图标组 -->
           <div class="social-icons">
             {socialLinks.map((link) => (
-              <a href={link.url} target="_blank" class="icon-link" aria-label="Social Link">
-                <i class={link.icon}></i>
-              </a>
+              <span class="icon-wrap" data-tooltip={link.label}>
+                <a href={link.url} target="_blank" class="icon-link" aria-label={link.label}>
+                  <Icon name={link.icon} size={18} />
+                </a>
+              </span>
             ))}
           </div>
 
           <div class="mini-footer">
-            <i class="fas fa-shopping-cart"></i> 商店:
+            <Icon name="shopping-cart" size={14} /> 商店:
             <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a>
             <span style="margin:0 5px">|</span>
             <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a>
@@ -130,31 +151,29 @@ const socialLinks = [
   }
 </script>
 
-<!-- 背景切换逻辑 — 使用 define:vars 将服务端数据安全注入客户端 -->
+<!-- 卡片右侧图片切换逻辑 — LiquidEther 作为页面背景，右侧图片独立切换 -->
 <script define:vars={{ bgList, initialBg: profile.bgImage }}>
   (function () {
     var bgImages = bgList;
     // initialBg 可能不在 bgList 中（初始图由 CSS 兜底），
-    // indexOf 返回 -1 时 bgImages[-1] = undefined，updateBackgrounds 会跳过
+    // indexOf 返回 -1 时 bgImages[-1] = undefined，updateVisualBg 会跳过
     var currentIdx = bgImages.indexOf(initialBg);
-    var mainContainer = document.getElementById('landing-bg');
     var visualSide = document.getElementById('visual-side');
     var changeBtn = document.getElementById('change-bg-btn');
 
-    function updateBackgrounds(url) {
+    function updateVisualBg(url) {
       if (!url) return;
-      if (mainContainer) mainContainer.style.backgroundImage = 'url(' + url + ')';
       if (visualSide) visualSide.style.backgroundImage = 'url(' + url + ')';
     }
 
-    // 初始加载
-    updateBackgrounds(bgImages[currentIdx]);
+    // 初始加载 — 只更新卡片右侧图片
+    updateVisualBg(bgImages[currentIdx]);
 
-    // 点击"更换图片"按钮循环切换
+    // 点击"更换图片"按钮循环切换卡片右侧图片
     if (changeBtn) {
       changeBtn.addEventListener('click', function () {
         currentIdx = (currentIdx + 1) % bgImages.length;
-        updateBackgrounds(bgImages[currentIdx]);
+        updateVisualBg(bgImages[currentIdx]);
       });
     }
   })();
@@ -255,8 +274,6 @@ const socialLinks = [
 
   /* 首页隐藏回到顶部按钮 + 音乐按钮 */
   :global(#back-to-top) { display: none !important; }
-  :global(.music-fab)   { display: none !important; }
-  :global(.music-panel) { display: none !important; }
 
   /* === 2. 主卡片 (Hero Card) === */
   .hero-card {
@@ -395,13 +412,44 @@ const socialLinks = [
     transform: scale(1.2) rotate(10deg);
     text-decoration: none;
   }
+  /* 平台名 tooltip — 在图标下方，不跟随旋转 */
+  .icon-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .icon-wrap::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 10;
+  }
+  .icon-wrap:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  /* 移动端不显示 tooltip */
+  @media (hover: none) {
+    .icon-wrap::after { display: none; }
+  }
 
   /* === 底部信息 === */
   .mini-footer { margin-top: 20px; font-size: 0.72rem; opacity: 0.6; }
 
   /* === 4. 右侧：视觉图片区 === */
   .visual-side {
-    background-image: url('/img/bg/6.png');
+    background-image: url('/img/bg/6.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -436,7 +484,7 @@ const socialLinks = [
     /* 移动端图片在上方 */
     .visual-side {
       grid-row: 1;
-      background-image: url('/img/ProfPic/1.jpg');
+      background-image: url('/img/ProfPic/1.webp');
       background-position: center top;
     }
 

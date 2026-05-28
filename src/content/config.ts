@@ -8,7 +8,7 @@ const blog = defineCollection({
     date: z.union([z.string(), z.date()]),
     tag: z.string(),
     color: z.string().default('#0040ff'),
-    img: z.string().default('/img/bg/1.png'),
+    img: z.string().default('/img/bg/1.webp'),
   }),
 });
 

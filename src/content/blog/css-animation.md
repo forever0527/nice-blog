@@ -4,7 +4,7 @@ desc: 深入探索现代 CSS 动画的各种技法，从简单的 transition 到
 date: 2026-05-12
 tag: UI设计
 color: "#00d2ff"
-img: /img/bg/2.png
+img: /img/bg/2.webp
 ---
 CSS 动画不再只是简单的 hover 效果。现代浏览器支持 3D 变换、自定义缓动函数、滚动驱动动画等高级特性。
 
