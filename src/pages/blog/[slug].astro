@@ -16,7 +16,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import FloatingButtons from '../../components/FloatingButtons.astro';
-import Snow from '../../components/Snow.astro';
 import Icon from '../../components/Icon.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -43,7 +42,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
 ---
 
 <BaseLayout title={`${title} - 懒得取名`}>
-  <Snow />
   <Header />
 
   <!-- 阅读进度条 — 颜色跟随文章标签 -->
@@ -66,8 +64,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
     <div class="post-layout">
       <!-- 浮动目录（桌面端） -->
       <aside class="post-toc" id="post-toc">
-        <div class="toc-title">目录</div>
-        <div class="toc-list" id="toc-list"></div>
         <!-- 最近文章 -->
         <div class="toc-recent">
           <div class="toc-title">最近发布</div>
@@ -77,6 +73,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
             ))}
           </div>
         </div>
+        <div class="toc-title">目录</div>
+        <div class="toc-list" id="toc-list"></div>
       </aside>
 
       <!-- 内容区 -->
@@ -326,7 +324,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
   /* ========================================================================
      0. 基础重置 — 文章页隐藏 Header 装饰区（波浪/头像/logo）
      ======================================================================== */
-  :global(.theme-header-decor) { display: none !important; }
 
   /* ========================================================================
      1. 阅读进度条
@@ -665,7 +662,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
   }
 
   /* TOC 最近文章 */
-  .toc-recent { margin-top: 28px; border-top: 1px solid rgba(128,128,128,0.1); padding-top: 20px; }
+  .toc-recent { border-bottom: 1px solid rgba(128,128,128,0.1); padding-bottom: 20px; margin-bottom: 20px; }
   .toc-recent-list { display: flex; flex-direction: column; gap: 1px; }
   :global(.toc-recent-link) {
     display: block; padding: 5px 12px; font-size: 0.78rem; color: var(--text);

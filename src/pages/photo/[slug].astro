@@ -1,0 +1,434 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import FloatingButtons from '../../components/FloatingButtons.astro';
+import Snow from '../../components/Snow.astro';
+import { photos } from '../../content/photos';
+
+export function getStaticPaths() {
+  return photos.map((photo) => ({
+    params: { slug: photo.slug },
+    props: { photo },
+  }));
+}
+
+const { photo } = Astro.props;
+const currentIndex = photos.findIndex((p) => p.slug === photo.slug);
+const prevPhoto = currentIndex > 0 ? photos[currentIndex - 1] : null;
+const nextPhoto = currentIndex < photos.length - 1 ? photos[currentIndex + 1] : null;
+---
+
+<BaseLayout title={`${photo.title} - 懒得取名`}>
+  <Snow />
+  <Header />
+
+  <div class="read-progress" id="read-progress"></div>
+
+  <main class="photo-detail-page">
+    <div class="photo-detail-hero">
+      <div class="photo-detail-image-wrap">
+        <img 
+          src={photo.src} 
+          alt={photo.title} 
+          class="photo-detail-image"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <div class="photo-detail-content">
+      <div class="photo-detail-meta">
+        <div class="photo-detail-location">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>{photo.location}</span>
+        </div>
+        <div class="photo-detail-date">{photo.year}.{photo.month}.{photo.day}</div>
+      </div>
+
+      <h1 class="photo-detail-title">{photo.title}</h1>
+      
+      <div class="photo-detail-divider"></div>
+
+      <p class="photo-detail-desc">{photo.desc}</p>
+
+      <div class="photo-detail-nav">
+        {prevPhoto ? (
+          <a href={`/photo/${prevPhoto.slug}`} class="photo-nav-link prev">
+            <span class="nav-circle">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </span>
+            <span class="nav-label">上一张</span>
+            <span class="nav-title">{prevPhoto.title}</span>
+          </a>
+        ) : <span class="photo-nav-link prev empty" />}
+
+        {nextPhoto ? (
+          <a href={`/photo/${nextPhoto.slug}`} class="photo-nav-link next">
+            <span class="nav-circle">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7-7"/>
+              </svg>
+            </span>
+            <span class="nav-label">下一张</span>
+            <span class="nav-title">{nextPhoto.title}</span>
+          </a>
+        ) : <span class="photo-nav-link next empty" />}
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+  <FloatingButtons />
+
+  <script>
+    (function () {
+      var bar = document.getElementById('read-progress');
+      if (!bar) return;
+      window.addEventListener('scroll', function () {
+        var docH = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+        bar.style.width = Math.min(pct, 100) + '%';
+      }, { passive: true });
+    })();
+
+    const imageWrap = document.querySelector('.photo-detail-image-wrap');
+    if (imageWrap) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          } else {
+            entry.target.classList.remove('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(imageWrap);
+    }
+
+    const content = document.querySelector('.photo-detail-content');
+    if (content && window.innerWidth >= 769) {
+      window.addEventListener('scroll', function() {
+        var rect = content.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.85) {
+          content.classList.add('visible');
+        } else {
+          content.classList.remove('visible');
+        }
+      }, { passive: true });
+    }
+
+    document.querySelectorAll('.photo-nav-link').forEach(btn => {
+      btn.addEventListener('mousemove', function(e) {
+        const rect = btn.getBoundingClientRect();
+        btn.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
+        btn.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+      });
+      btn.addEventListener('mouseleave', function() {
+        btn.style.setProperty('--mx', '50%');
+        btn.style.setProperty('--my', '50%');
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  :global(.read-progress) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    z-index: 10000;
+    width: 0%;
+    background: linear-gradient(to right, #0040ff, #0040ffcc);
+    transition: width 0.12s linear;
+    pointer-events: none;
+  }
+
+  .photo-detail-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .photo-detail-hero {
+    width: 100%;
+    padding: 140px 8vw 60px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .photo-detail-image-wrap {
+    max-width: 800px;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .photo-detail-image-wrap.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .photo-detail-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .photo-detail-content {
+    max-width: 1100px;
+    width: 100%;
+    padding: 0 5vw 60px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+  }
+
+  .photo-detail-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .photo-detail-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .photo-detail-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text);
+    opacity: 0.5;
+    letter-spacing: 0.5px;
+  }
+
+  .photo-detail-location svg {
+    opacity: 0.6;
+  }
+
+  .photo-detail-date {
+    font-family: 'Georgia', serif;
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.4;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .photo-detail-title {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 4px;
+    margin-bottom: 28px;
+    line-height: 1.3;
+  }
+
+  .photo-detail-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--text), transparent);
+    opacity: 0.12;
+    margin-bottom: 28px;
+  }
+
+  .photo-detail-desc {
+    font-size: 1.05rem;
+    line-height: 2;
+    color: var(--text);
+    opacity: 0.7;
+    letter-spacing: 0.3px;
+    margin-bottom: 56px;
+    text-indent: 2em;
+  }
+
+  .photo-detail-nav {
+    max-width: 760px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .photo-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 22px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.22);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  :global([data-theme="dark"]) .photo-nav-link {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .photo-nav-link:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    border-color: rgba(0,64,255,0.3);
+  }
+
+  :global([data-theme="dark"]) .photo-nav-link:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  }
+
+  .photo-nav-link.empty { visibility: hidden; }
+
+  .photo-nav-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(0,64,255,0.1), transparent 40%);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .photo-nav-link:hover::after {
+    opacity: 1;
+  }
+
+  :global([data-theme="dark"]) .photo-nav-link::after {
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(148,163,255,0.15), transparent 40%);
+  }
+
+  .nav-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .photo-nav-link.prev .nav-label { justify-content: flex-start; }
+  .photo-nav-link.next .nav-label { justify-content: flex-end; }
+
+  .nav-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  .photo-nav-link.next { text-align: right; align-items: flex-end; }
+
+  .photo-nav-link .nav-circle {
+    position: absolute;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(0,64,255,0.06);
+    transform: translateY(-50%);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    opacity: 0.4;
+  }
+
+  .photo-nav-link.prev .nav-circle { left: 14px; }
+  .photo-nav-link.next .nav-circle { right: 14px; }
+
+  .photo-nav-link:hover .nav-circle {
+    background: #0040ff;
+    color: #fff;
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(0,64,255,0.3);
+  }
+
+  .photo-nav-link.prev { padding-left: 52px; }
+  .photo-nav-link.next { padding-right: 52px; }
+
+  :global([data-theme="dark"]) .photo-detail-image-wrap {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .photo-detail-hero {
+      padding: 90px 4vw 40px;
+    }
+
+    .photo-detail-content {
+      padding: 0 5vw 24px;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .photo-detail-title {
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+    }
+
+    .photo-detail-desc {
+      font-size: 0.95rem;
+      line-height: 1.9;
+    }
+
+    .photo-detail-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .photo-nav-link.next {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .photo-nav-link.next .nav-label {
+      justify-content: flex-start;
+    }
+
+    .photo-nav-link.next .nav-circle {
+      left: 14px;
+      right: auto;
+    }
+
+    .photo-nav-link.next {
+      padding-left: 52px;
+      padding-right: 22px;
+    }
+  }
+</style>

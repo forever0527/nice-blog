@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
 import Icon from '../components/Icon.astro';
+import Header from '../components/Header.astro';
 
 // 个人信息 — 修改此处的数据即可更新首页内容
 const profile = {
@@ -29,6 +30,7 @@ const socialLinks = [
 
 <BaseLayout title={`${profile.name} - 懒得取名`}>
   <Snow />
+  <Header />
 
   <main class="landing-container" id="landing-bg">
 
@@ -49,7 +51,7 @@ const socialLinks = [
 
           <!-- 交互按钮组 -->
           <div class="cta-group">
-            <a href="/blog" class="liquid-btn" target="_blank">
+            <a href="/blog" class="liquid-btn">
               <span>Enter Blog</span>
             </a>
 
@@ -70,7 +72,7 @@ const socialLinks = [
           </div>
 
           <div class="mini-footer">
-            <span><Icon name="shopping-cart" size={14} /> 商店: <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a> <span style="margin:0 5px">|</span> <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a></span>
+            <span class="mini-footer-shop"><Icon name="shopping-cart" size={14} /> 商店: <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a> <span style="margin:0 5px">|</span> <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a></span>
             <br>
             &copy; 2025 {profile.name}. Designed with Astro.
           </div>
@@ -83,6 +85,166 @@ const socialLinks = [
 
     </div>
   </main>
+
+  <!-- 关于页面 — 展开后显示，90年代复古粗体印刷风 -->
+  <div class="about-page" id="about-page">
+    <div class="about-inner">
+
+      <!-- Hero: 巨型排版 -->
+      <header class="retro-hero">
+        <p class="retro-eyebrow anim-reveal">EST. 2022 — FULL-STACK × AI</p>
+        <h1 class="retro-title anim-reveal">
+          <span class="retro-line">BUILD</span>
+          <span class="retro-line accent">THINGS</span>
+          <span class="retro-line small">THAT MATTER</span>
+        </h1>
+        <div class="retro-hero-img parallax-img" data-speed="0.15">
+          <img src="/img/bg/6.webp" alt="" loading="lazy" />
+        </div>
+      </header>
+
+      <!-- Marquee 跑马灯 -->
+      <div class="retro-marquee">
+        <div class="marquee-track">
+          <span>CREATIVE DEVELOPER</span>
+          <span>★</span>
+          <span>AI EXPLORER</span>
+          <span>★</span>
+          <span>WEBGL ARTIST</span>
+          <span>★</span>
+          <span>OPEN SOURCE</span>
+          <span>★</span>
+          <span>CREATIVE DEVELOPER</span>
+          <span>★</span>
+          <span>AI EXPLORER</span>
+          <span>★</span>
+          <span>WEBGL ARTIST</span>
+          <span>★</span>
+          <span>OPEN SOURCE</span>
+          <span>★</span>
+        </div>
+      </div>
+
+      <!-- 简介：错位图文 -->
+      <section class="retro-section retro-about">
+        <div class="retro-text anim-slide">
+          <span class="retro-label">01 — WHO</span>
+          <h2 class="retro-heading">代码即诗歌<br/>设计如数学</h2>
+          <p class="retro-body">
+            一个热爱创造的程序员。相信代码可以像诗歌一样优雅，设计可以像数学一样精确。目前在探索 AI 与前端技术的交汇点，用 Three.js 构建沉浸式的 Web 体验。
+          </p>
+        </div>
+        <div class="retro-image stagger-img parallax-img" data-speed="0.1">
+          <img src="/img/bg/3.webp" alt="" loading="lazy" />
+        </div>
+      </section>
+
+      <!-- 技术栈：非对称网格 -->
+      <section class="retro-section retro-skills">
+        <span class="retro-label anim-slide">02 — STACK</span>
+        <div class="skills-grid">
+          <div class="skill-card anim-reveal" style="--delay:0s">
+            <span class="skill-num">01</span>
+            <span class="skill-name">TypeScript</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.1s">
+            <span class="skill-num">02</span>
+            <span class="skill-name">React / Next.js</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.2s">
+            <span class="skill-num">03</span>
+            <span class="skill-name">Three.js / WebGL</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.3s">
+            <span class="skill-num">04</span>
+            <span class="skill-name">Node.js</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.4s">
+            <span class="skill-num">05</span>
+            <span class="skill-name">Python / AI</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 旅程：电影级滚动叙事 -->
+      <section class="retro-section retro-journey">
+        <div class="retro-text anim-slide">
+          <span class="retro-label">03 — JOURNEY</span>
+          <h2 class="retro-heading">时间线</h2>
+        </div>
+        <div class="journey-timeline">
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2025</span>
+            <div class="journey-content">
+              <h3>独立开发者</h3>
+              <p>探索 AI + 前端交叉领域，构建个人工具链。</p>
+            </div>
+          </div>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2024</span>
+            <div class="journey-content">
+              <h3>深入 WebGL</h3>
+              <p>Three.js + GLSL 流体模拟与交互视觉。</p>
+            </div>
+          </div>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2023</span>
+            <div class="journey-content">
+              <h3>全栈之路</h3>
+              <p>Node.js + 数据库 + SSR 完整闭环。</p>
+            </div>
+          </div>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2022</span>
+            <div class="journey-content">
+              <h3>前端入门</h3>
+              <p>用 React 写出第一个完整博客。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 大图视差 -->
+      <section class="retro-section retro-visual">
+        <div class="retro-visual-img parallax-img" data-speed="0.2">
+          <img src="/img/bg/4.webp" alt="" loading="lazy" />
+        </div>
+        <div class="retro-visual-overlay anim-reveal">
+          <span class="retro-big-text">CREATE</span>
+        </div>
+      </section>
+
+      <!-- BLUE 文字高度展开 -->
+      <section class="retro-section retro-blue" id="retro-blue">
+        <div class="blue-footer" id="blue-footer">
+          <span class="blue-footer-left">WE CRAFT BOLD DESIGN & CLEAN CODE.</span>
+          <span class="blue-footer-right">TRUE BLUE · 2025</span>
+        </div>
+        <div class="blue-text-wrap" id="blue-text-wrap">
+          <span class="blue-text" id="blue-text">BLUE</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+  </div>
+
+  <!-- 展开按钮 -->
+  <button class="expand-btn" id="expand-btn" aria-label="展开">
+    <svg class="icon-expand" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="16 18 22 12 16 6"></polyline>
+      <polyline points="8 6 2 12 8 18"></polyline>
+    </svg>
+    <svg class="icon-collapse" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="16 6 22 12 16 18"></polyline>
+      <polyline points="8 18 2 12 8 6"></polyline>
+    </svg>
+  </button>
 
   <!-- 首页主题切换按钮 — 固定在右下，回到顶部按钮上方 -->
   <button class="index-theme-btn" id="index-theme-toggle" aria-label="切换主题">
@@ -123,7 +285,7 @@ const socialLinks = [
   });
 
   // 卡片鼠标跟随倾斜效果 — 仅桌面端
-  if (window.matchMedia('(hover: hover)').matches) {
+  if (window.matchMedia('(hover: hover) and (min-width: 769px)').matches) {
     var heroCard = document.querySelector('.hero-card');
     if (heroCard) {
       heroCard.addEventListener('mousemove', function (e) {
@@ -142,6 +304,152 @@ const socialLinks = [
         heroCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
       });
     }
+  }
+
+  // 展开/收起卡片分裂动效
+  var expandBtn = document.getElementById('expand-btn');
+  var heroCardEl = document.querySelector('.hero-card');
+  var aboutPage = document.getElementById('about-page');
+  var navbar = document.getElementById('main-nav');
+  var isExpanded = false;
+  var isAnimating = false;
+
+  if (expandBtn && heroCardEl && aboutPage) {
+    var logoOverlay = document.getElementById('nav-logo-overlay');
+    expandBtn.addEventListener('click', function () {
+      if (isAnimating) return;
+      isAnimating = true;
+      setTimeout(function () { isAnimating = false; }, 800);
+
+      if (isExpanded) {
+        heroCardEl.classList.remove('splitting');
+        heroCardEl.classList.add('merging');
+        aboutPage.classList.remove('active');
+        expandBtn.classList.remove('is-expanded');
+        if (navbar) navbar.classList.remove('nav-visible');
+        if (logoOverlay) logoOverlay.classList.remove('nav-visible');
+        document.body.classList.remove('index-expanded');
+        setTimeout(function () {
+          heroCardEl.classList.remove('merging');
+          heroCardEl.style.transform = '';
+          heroCardEl.style.transition = '';
+        }, 700);
+      } else {
+        heroCardEl.style.transform = 'none';
+        heroCardEl.style.transition = 'none';
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            heroCardEl.classList.add('splitting');
+            aboutPage.classList.add('active');
+            expandBtn.classList.add('is-expanded');
+            if (navbar) navbar.classList.add('nav-visible');
+            if (logoOverlay) logoOverlay.classList.add('nav-visible');
+            document.body.classList.add('index-expanded');
+          });
+        });
+      }
+      isExpanded = !isExpanded;
+    });
+  }
+
+  // 首页展开时，回到顶部滚动 about-page 而非 window
+  var backToTop = document.getElementById('back-to-top');
+  if (backToTop) {
+    backToTop.addEventListener('click', function (e) {
+      if (aboutPage && aboutPage.classList.contains('active')) {
+        e.stopImmediatePropagation();
+        aboutPage.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, true);
+  }
+
+  // 展开后监听 about-page 滚动，下滑超过 200px 才显示回到顶部
+  if (aboutPage && backToTop) {
+    aboutPage.addEventListener('scroll', function () {
+      if (aboutPage.scrollTop > 200) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    }, { passive: true });
+  }
+
+  // 滚动动画：Intersection Observer 控制元素入场
+  function initScrollAnimations() {
+    if (!aboutPage) return;
+    var reveals = aboutPage.querySelectorAll('.anim-reveal, .anim-slide');
+    var parallaxes = aboutPage.querySelectorAll('.parallax-img');
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { root: aboutPage, threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+    reveals.forEach(function (el, i) {
+      el.style.transitionDelay = (i * 0.08) + 's';
+      observer.observe(el);
+    });
+
+    // 视差滚动 + BLUE 文字动画
+    aboutPage.addEventListener('scroll', function () {
+      var scrollTop = aboutPage.scrollTop;
+      var scrollHeight = aboutPage.scrollHeight - aboutPage.clientHeight;
+      var scrollProgress = Math.min(scrollTop / scrollHeight, 1);
+
+      parallaxes.forEach(function (el) {
+        var speed = parseFloat(el.dataset.speed) || 0.1;
+        var rect = el.getBoundingClientRect();
+        var center = rect.top + rect.height / 2;
+        var viewCenter = window.innerHeight / 2;
+        var offset = (center - viewCenter) * speed;
+        el.style.transform = 'translateY(' + offset + 'px)';
+      });
+
+      // BLUE 文字高度展开 + 页脚上移
+      var blueWrap = document.getElementById('blue-text-wrap');
+      var blueText = document.getElementById('blue-text');
+      if (blueWrap && blueText) {
+        var blueSection = document.getElementById('retro-blue');
+        var blueFooter = document.getElementById('blue-footer');
+        if (blueSection) {
+          var sectionRect = blueSection.getBoundingClientRect();
+          var sectionTop = sectionRect.top;
+          var viewH = window.innerHeight;
+          // 线性进度
+          var progress = Math.max(0, Math.min(1, (viewH - sectionTop) / (viewH + sectionRect.height)));
+
+          // 高度从 0 到 90vh
+          var targetH = progress * 90;
+          blueWrap.style.height = targetH + 'vh';
+
+          // 动态调整字号使文字精确撑满屏幕宽度
+          var wrapW = blueWrap.offsetWidth;
+          if (wrapW > 0) {
+            var fs = wrapW / 4.2;
+            blueText.style.fontSize = fs + 'px';
+          }
+
+          // 页脚文字向上位移，逐步移出
+          if (blueFooter) {
+            var footerOffset = progress * -80;
+            var footerOpacity = 1 - progress * 1.5;
+            blueFooter.style.transform = 'translateY(' + footerOffset + 'px)';
+            blueFooter.style.opacity = Math.max(0, footerOpacity);
+          }
+        }
+      }
+    }, { passive: true });
+  }
+
+  // 展开时初始化动画
+  var expandBtn2 = document.getElementById('expand-btn');
+  if (expandBtn2) {
+    expandBtn2.addEventListener('click', function () {
+      setTimeout(initScrollAnimations, 600);
+    });
   }
 </script>
 
@@ -208,15 +516,15 @@ const socialLinks = [
   /* 首页主题切换按钮 — 液态玻璃圆形 */
   :global(.index-theme-btn) {
     position: fixed;
-    right: 30px;
-    bottom: 68px;
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    right: 20px;
+    bottom: 102px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
     color: var(--text);
     cursor: pointer;
     z-index: var(--z-toggle);
@@ -224,13 +532,15 @@ const socialLinks = [
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
   }
 
   :global([data-theme="dark"]) .index-theme-btn {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0,64,255,0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0,64,255,0.05);
   }
 
   :global(.index-theme-btn):hover {
@@ -245,26 +555,550 @@ const socialLinks = [
 
   :global(.index-theme-btn) svg {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     fill: currentColor;
   }
 
   @media (min-width: 768px) {
     :global(.index-theme-btn) {
-      right: 47px;
-      bottom: 78px;
-      width: 50px;
-      height: 50px;
+      right: 3vw;
+      bottom: 120px;
+      width: 40px;
+      height: 40px;
     }
     :global(.index-theme-btn) svg {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
     }
   }
 
-  /* 首页隐藏回到顶部按钮 + 音乐按钮 */
+  /* 首页默认隐藏回到顶部按钮，展开后仅通过 .show 类控制 */
   :global(#back-to-top) { display: none !important; }
+  body.index-expanded :global(#back-to-top) {
+    display: flex !important;
+  }
+  body.index-expanded :global(#back-to-top.show) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+
+  /* 展开时隐藏主题切换按钮 */
+  body.index-expanded :global(.index-theme-btn) { display: none !important; }
+
+  /* 首页隐藏导航栏，展开后显示 */
+  :global(.smart-navbar) {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  :global(.smart-navbar.nav-visible) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  :global(.nav-logo-overlay) {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  :global(.nav-logo-overlay.nav-visible) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* === 展开按钮 === */
+  :global(.expand-btn) {
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 62px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    color: var(--text);
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+  }
+
+  :global(.expand-btn):hover {
+    transform: scale(1.1);
+    border-color: rgba(0, 64, 255, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 30px rgba(0, 64, 255, 0.08);
+  }
+
+  :global(.expand-btn):active {
+    transform: scale(0.9);
+  }
+
+  :global([data-theme="dark"]) .expand-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.expand-btn) svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  :global(.expand-btn .icon-collapse) {
+    display: none;
+  }
+
+  :global(.expand-btn.is-expanded .icon-expand) {
+    display: none;
+  }
+
+  :global(.expand-btn.is-expanded .icon-collapse) {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    :global(.expand-btn) {
+      right: 3vw !important;
+      bottom: 70px;
+      width: 40px;
+      height: 40px;
+    }
+    :global(.expand-btn) svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  /* === 关于页面 — 90年代复古粗体印刷风 === */
+  .about-page {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    overflow-y: auto;
+    overflow-x: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease 0.5s;
+    background: transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .about-page.active { opacity: 1; pointer-events: auto; }
+
+  .about-inner {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* --- Hero --- */
+  .retro-hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(40px, 8vh, 80px) clamp(20px, 6vw, 80px);
+    overflow: hidden;
+  }
+  .retro-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.4;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .retro-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .retro-line {
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .retro-line.accent {
+    color: #0040ff;
+    -webkit-text-stroke: 2px #0040ff;
+    -webkit-text-fill-color: transparent;
+  }
+  :global([data-theme="dark"]) .retro-line.accent {
+    color: #4d8aff;
+    -webkit-text-stroke: 2px #4d8aff;
+  }
+  .retro-line.small {
+    font-size: clamp(1.2rem, 3vw, 2.4rem);
+    opacity: 0.5;
+    margin-top: 12px;
+  }
+  .retro-hero-img {
+    position: absolute;
+    right: -5%;
+    bottom: -10%;
+    width: 45%;
+    max-width: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    opacity: 0.2;
+    mask-image: linear-gradient(to top, transparent 0%, black 40%);
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%);
+  }
+  .retro-hero-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* --- Marquee --- */
+  .retro-marquee {
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+    border-top: 1px solid rgba(128,128,128,0.15);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 40px;
+    white-space: nowrap;
+    animation: marquee-scroll 20s linear infinite;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.3;
+  }
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* --- Sections --- */
+  .retro-section {
+    padding: clamp(60px, 10vh, 120px) clamp(20px, 6vw, 80px);
+    position: relative;
+  }
+  .retro-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.3;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .retro-heading {
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .retro-body {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text);
+    opacity: 0.6;
+    max-width: 560px;
+  }
+
+  /* --- About: 错位图文 --- */
+  .retro-about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(30px, 5vw, 60px);
+    align-items: center;
+  }
+  .retro-about .retro-image {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .retro-about .retro-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* --- Skills: 非对称网格 --- */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .skill-card {
+    background: rgba(128,128,128,0.04);
+    border: 1px solid rgba(128,128,128,0.08);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .skill-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,64,255,0.3);
+  }
+  .skill-card:nth-child(4),
+  .skill-card:nth-child(5) {
+    grid-column: span 1;
+  }
+  .skill-num {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #0040ff;
+    opacity: 0.5;
+    letter-spacing: 2px;
+  }
+  .skill-card .skill-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: 0.8;
+  }
+  .skill-card .skill-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(128,128,128,0.1);
+    margin-top: 8px;
+  }
+  .skill-card .skill-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #0040ff;
+  }
+
+  /* --- Journey --- */
+  .journey-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 32px;
+    border-top: 1px solid rgba(128,128,128,0.12);
+  }
+  .journey-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 24px;
+    padding: 32px 0;
+    border-bottom: 1px solid rgba(128,128,128,0.12);
+    transition: background 0.3s ease;
+  }
+  .journey-item:hover {
+    background: rgba(128,128,128,0.03);
+  }
+  .journey-year {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #0040ff;
+    opacity: 0.4;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .journey-content h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .journey-content p {
+    font-size: 0.85rem;
+    color: var(--text);
+    opacity: 0.5;
+    line-height: 1.6;
+  }
+
+  /* --- Visual: 大图视差 --- */
+  .retro-visual {
+    position: relative;
+    height: 70vh;
+    overflow: hidden;
+  }
+  .retro-visual-img {
+    position: absolute;
+    inset: -20% 0;
+  }
+  .retro-visual-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .retro-visual-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+  }
+  .retro-big-text {
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 900;
+    color: white;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  /* --- BLUE 文字高度展开 --- */
+  .retro-blue {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+    overflow: hidden;
+  }
+  .blue-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px clamp(20px, 4vw, 48px);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.5;
+    will-change: transform, opacity;
+    flex-shrink: 0;
+  }
+  .blue-text-wrap {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    will-change: height;
+  }
+  .blue-text {
+    display: block;
+    text-align: center;
+    font-size: clamp(10rem, 28vw, 24rem);
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* --- 动画 --- */
+  .anim-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .anim-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .anim-slide {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .anim-slide.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --- 响应式 --- */
+  @media (max-width: 768px) {
+    .retro-about {
+      grid-template-columns: 1fr;
+    }
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+    .journey-item {
+      grid-template-columns: 80px 1fr;
+    }
+    .retro-hero-img {
+      width: 60%;
+      opacity: 0.12;
+    }
+  }
+
+  /* === 卡片分裂动效 — 真实裂开 === */
+  .hero-card.splitting {
+    overflow: visible;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .hero-card.splitting .glass-content {
+    transform: translateX(-110vw) rotate(-10deg);
+    opacity: 0;
+    border-radius: 40px 0 0 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: none;
+    transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1),
+                opacity 0.4s ease 0.3s;
+  }
+
+  .hero-card.splitting .visual-side {
+    transform: translateX(110vw) rotate(10deg);
+    opacity: 0;
+    border-radius: 0 40px 40px 0;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: none;
+    clip-path: none;
+    margin-left: 0;
+    transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1),
+                opacity 0.4s ease 0.3s;
+  }
+
+  .hero-card.merging .glass-content {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s ease;
+  }
+
+  .hero-card.merging .visual-side {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    margin-left: -110px;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s ease;
+  }
+
+  .hero-card.merging {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    transition: background 0.3s ease 0.4s,
+                border-color 0.3s ease 0.4s,
+                box-shadow 0.3s ease 0.4s;
+  }
 
   /* === 2. 主卡片 (Hero Card) === */
   .hero-card {
@@ -288,18 +1122,22 @@ const socialLinks = [
 
   /* === 3. 左侧：玻璃质感内容区 === */
   .glass-content {
-    backdrop-filter: blur(15px) saturate(180%);
-    -webkit-backdrop-filter: blur(15px) saturate(180%);
-    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(200, 200, 200, 0.4);
     transition: background 0.5s ease;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 2.5vw;
+    overflow: hidden;
+    border-radius: 40px 0 0 40px;
   }
 
   :global([data-theme="dark"]) .glass-content {
-    background: rgba(94, 95, 97, 0.3);
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(100, 110, 130, 0.3);
   }
 
   .content-inner {
@@ -364,7 +1202,6 @@ const socialLinks = [
     font-size: 0.92rem;
     transition: transform 0.3s, box-shadow 0.3s;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    will-change: transform;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -383,7 +1220,6 @@ const socialLinks = [
     backdrop-filter: blur(14px) saturate(150%);
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    will-change: transform;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -409,7 +1245,6 @@ const socialLinks = [
     font-size: 1.1rem;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    will-change: transform;
   }
 
   :global([data-theme="dark"]) .icon-link { background: rgba(255, 255, 255, 0.1); }
@@ -447,11 +1282,11 @@ const socialLinks = [
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
-  /* 移动端不显示 tooltip — 仅桌面端显示 */
 
   /* === 底部信息 === */
-  .mini-footer { margin-top: 20px; font-size: 0.72rem; opacity: 0.7; }
+  .mini-footer { margin-top: 20px; font-size: 0.72rem; opacity: 0.7; overflow-wrap: anywhere; word-break: break-word; }
   .mini-footer :global(svg) { display: inline; vertical-align: middle; }
+  .mini-footer-shop { display: inline-flex; align-items: center; gap: 4px; }
 
   /* === 4. 右侧：视觉图片区 === */
   .visual-side {
@@ -462,6 +1297,8 @@ const socialLinks = [
     clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
     margin-left: -110px;
     z-index: 1;
+    overflow: hidden;
+    border-radius: 0 40px 40px 0;
   }
 
   /* === 5. 响应式 — 移动端适配 === */
@@ -476,23 +1313,27 @@ const socialLinks = [
     .hero-card {
       height: auto;
       grid-template-columns: 1fr;
-      grid-template-rows: 400px auto;
+      grid-template-rows: 350px auto;
       border-radius: 30px;
       margin-top: 10px;
     }
 
-    /* 移动端图片在上方 */
+    /* 移动端图片在上方 — 只保留上圆角 */
     .visual-side {
       grid-row: 1;
       background-image: url('/img/ProfPic/1.webp');
-      background-position: center top;
+      background-position: center center;
+      clip-path: none;
+      margin-left: 0;
+      border-radius: 30px 30px 0 0;
     }
 
-    /* 移动端内容居中 */
+    /* 移动端内容居中 — 只保留下圆角 */
     .glass-content {
       grid-row: 2;
-      padding: 40px 25px;
+      padding: 32px 20px;
       text-align: center;
+      border-radius: 0 0 30px 30px;
     }
 
     .content-inner {
@@ -504,12 +1345,79 @@ const socialLinks = [
     .cta-group { flex-direction: column; width: 100%; }
 
     .liquid-btn, .secondary-btn {
-      width: 60%;
+      width: 80%;
+      max-width: 240px;
       margin: 0 auto;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     .social-icons { justify-content: center; }
+
+    .about-cta {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* 移动端分裂动效 — 淡出而非水平飞出 */
+    .hero-card.splitting .glass-content {
+      transform: translateY(60px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1),
+                  opacity 0.3s ease;
+    }
+
+    .hero-card.splitting .visual-side {
+      transform: translateY(-60px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1),
+                  opacity 0.3s ease;
+    }
+
+    /* 移动端合并动效 — 淡入 */
+    .hero-card.merging .glass-content {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+      border-radius: 0 0 30px 30px;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.3s ease;
+    }
+
+    .hero-card.merging .visual-side {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+      border-radius: 30px 30px 0 0;
+      box-shadow: none;
+      border: none;
+      clip-path: none;
+      margin-left: 0;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.3s ease;
+    }
+
+    /* 移动端关于页内容约束 */
+    .about-inner {
+      width: 100%;
+      max-width: none;
+    }
+  }
+
+  /* === 无障碍 — 尊重用户减少动画偏好 === */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .hero-card.splitting .glass-content,
+    .hero-card.splitting .visual-side,
+    .hero-card.merging .glass-content,
+    .hero-card.merging .visual-side {
+      transition: none;
+    }
   }
 </style>

@@ -1,0 +1,135 @@
+---
+export interface Props {
+  title: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<section class="hero-title-section">
+  <div class="hero-ornament left">
+    <img src="/img/laa/花括弧边框 左.png" alt="边框装饰" />
+  </div>
+  <div class="hero-title-center">
+    <h1 class="hero-main-title">{title}</h1>
+    {subtitle && <p class="hero-subtitle">{subtitle}</p>}
+  </div>
+  <div class="hero-ornament right">
+    <img src="/img/laa/花括弧边框 右.png" alt="边框装饰" />
+  </div>
+</section>
+
+<style>
+  .hero-title-section {
+    text-align: center;
+    padding: 120px 5vw 60px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .hero-title-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: heroReveal 0.6s ease 0.8s forwards;
+  }
+
+  .hero-main-title {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 6px;
+    margin-bottom: 12px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.5;
+    letter-spacing: 2px;
+  }
+
+  .hero-ornament {
+    width: 50px;
+    height: 140px;
+    opacity: 0.25;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hero-ornament.left {
+    animation: splitLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+
+  .hero-ornament.right {
+    animation: splitRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+
+  .hero-ornament img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @keyframes splitLeft {
+    0% { transform: translateX(calc(50vw - 50%)); opacity: 0; }
+    100% { transform: translateX(0); opacity: 0.25; }
+  }
+
+  @keyframes splitRight {
+    0% { transform: translateX(calc(-50vw + 50%)); opacity: 0; }
+    100% { transform: translateX(0); opacity: 0.25; }
+  }
+
+  @keyframes heroReveal {
+    to { opacity: 1; }
+  }
+
+  :global([data-theme="dark"]) .hero-ornament {
+    opacity: 0.6;
+  }
+
+  :global([data-theme="dark"]) .hero-ornament img {
+    filter: invert(1) brightness(1.2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-ornament.left,
+    .hero-ornament.right {
+      animation: none;
+    }
+    .hero-title-center {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title-section {
+      padding: 130px 5vw 40px;
+      gap: 16px;
+    }
+
+    .hero-main-title {
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.75rem;
+    }
+
+    .hero-ornament {
+      width: 40px;
+      height: 110px;
+    }
+  }
+</style>

@@ -3,6 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
+import Snow from '../components/Snow.astro';
+import HeroTitle from '../components/HeroTitle.astro';
 
 const links = [
   { name: 'GitHub', desc: '代码托管与协作平台', url: 'https://github.com' },
@@ -15,14 +17,11 @@ const links = [
 ---
 
 <BaseLayout title="Links - 懒得取名">
+  <Snow />
   <Header />
 
   <main class="link-page">
-    <header class="link-hero">
-      <p class="link-eyebrow">Directory</p>
-      <h1 class="link-title">友链</h1>
-      <p class="link-desc">值得常访的角落，数字世界里的邻居。</p>
-    </header>
+    <HeroTitle title="友链" subtitle="值得常访的角落，数字世界里的邻居。" />
 
     <nav class="link-grid" aria-label="友情链接">
       {links.map(l => (
@@ -45,47 +44,14 @@ const links = [
 </BaseLayout>
 
 <style>
-  :global(.theme-header-decor) { display: none !important; }
-  :global(.snow-container) { display: none !important; }
-
   /* Page — 夸张极简：大量留白 */
   .link-page {
     width: 100%;
     min-height: calc(100vh - 76px);
-    background-color: var(--bg);
-    padding: clamp(80px, 14vh, 140px) 48px 120px;
+    background-color: transparent;
+    padding: 0 48px 120px;
     max-width: 680px;
     margin: 0 auto;
-  }
-
-  /* Hero */
-  .link-hero {
-    margin-bottom: clamp(56px, 10vh, 96px);
-  }
-  .link-eyebrow {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    color: var(--text);
-    opacity: 0.35;
-    margin-bottom: 16px;
-  }
-  .link-title {
-    font-family: 'Georgia','Noto Serif SC',serif;
-    font-size: clamp(3rem, 7vw, 5rem);
-    font-weight: 700;
-    letter-spacing: 4px;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 16px;
-  }
-  .link-desc {
-    font-size: 0.95rem;
-    color: var(--text);
-    opacity: 0.4;
-    letter-spacing: 1px;
-    line-height: 1.7;
-    max-width: 420px;
   }
 
   /* Grid */
@@ -102,24 +68,24 @@ const links = [
     gap: 16px;
     padding: 20px 24px;
     border-radius: 16px;
-    background: rgba(128,128,128,0.04);
-    border: 1px solid rgba(128,128,128,0.08);
+    background: transparent;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(120,120,120,0.5);
     text-decoration: none;
     color: var(--text);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.3s ease;
     cursor: pointer;
+    box-shadow: 3px 3px 8px var(--nav-edge), 1px 1px 3px var(--nav-edge);
   }
-  :global([data-theme="dark"]) .link-card {
-    background: rgba(255,255,255,0.03);
-    border-color: rgba(255,255,255,0.06);
-  }
-  :global([data-theme="dark"]) .link-card {
-    border-color: rgba(255,255,255,0.06);
-  }
-
   .link-card:hover {
     border-color: rgba(0,64,255,0.25);
     box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,64,255,0.06);
+    transform: translateY(-2px);
+  }
+  :global([data-theme="dark"]) .link-card {
+    background: transparent;
+    border-color: rgba(80,90,110,0.4);
   }
   :global([data-theme="dark"]) .link-card:hover {
     box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,64,255,0.12);
@@ -186,10 +152,7 @@ const links = [
   /* 响应式 */
   @media (max-width: 768px) {
     .link-page {
-      padding: clamp(48px, 10vh, 72px) 20px 80px;
-    }
-    .link-title {
-      font-size: clamp(2.2rem, 9vw, 3.5rem);
+      padding: 0 20px 80px;
     }
     .link-card {
       padding: 16px 18px;

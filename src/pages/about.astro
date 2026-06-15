@@ -3,7 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
+import Snow from '../components/Snow.astro';
 import Icon from '../components/Icon.astro';
+import HeroTitle from '../components/HeroTitle.astro';
 
 const stats = [
   { num: '4+', label: '年开发经验' },
@@ -35,21 +37,16 @@ const socials = [
 ---
 
 <BaseLayout title="About - 懒得取名">
+  <Snow />
   <Header />
 
   <main class="page">
-    <header class="hero">
-      <p class="hero-eyebrow">About Me</p>
-      <h1 class="hero-title">关于</h1>
-      <p class="hero-desc">写代码、做设计、玩 AI。相信工具决定边界，审美决定上限。</p>
-    </header>
+    <HeroTitle title="关于" subtitle="写代码、做设计、玩 AI。相信工具决定边界，审美决定上限。" />
 
     <!-- 个人卡片 -->
     <section class="profile-card">
       <div class="profile-top">
-        <div class="profile-avatar">
-          <img src="/img/ProfPic/1.webp" alt="True Blue" loading="eager" decoding="async" />
-        </div>
+
         <div class="profile-info">
           <h2 class="profile-name">True Blue</h2>
           <p class="profile-role">全栈开发者 / AI 探索者</p>
@@ -119,77 +116,41 @@ const socials = [
   .page {
     width: 100%;
     min-height: calc(100vh - 76px);
-    background: var(--bg);
-    padding: clamp(64px, 12vh, 100px) clamp(20px, 4vw, 48px) 120px;
+    background: transparent;
+    padding: 0 clamp(20px, 4vw, 48px) 120px;
     max-width: 780px;
     margin: 0 auto;
-  }
-
-  .hero {
-    margin-bottom: clamp(48px, 8vh, 72px);
-  }
-  .hero-eyebrow {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    color: var(--text);
-    opacity: 0.3;
-    margin-bottom: 14px;
-  }
-  .hero-title {
-    font-family: 'Georgia','Noto Serif SC',serif;
-    font-size: clamp(2.8rem, 6vw, 4.5rem);
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 14px;
-  }
-  .hero-desc {
-    font-size: 0.92rem;
-    color: var(--text);
-    opacity: 0.38;
-    letter-spacing: 0.8px;
-    line-height: 1.7;
-    max-width: 420px;
   }
 
   /* ── Profile Card ── */
   .profile-card {
     border-radius: 22px;
-    background: rgba(128,128,128,0.04);
-    border: 1px solid rgba(128,128,128,0.08);
+    background: transparent;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(120,120,120,0.5);
     padding: clamp(24px, 4vw, 36px);
     margin-bottom: 24px;
-    transition: border-color 0.3s;
+    transition: border-color 0.3s, transform 0.3s ease;
+    box-shadow: 3px 3px 10px var(--nav-edge), 1px 1px 3px var(--nav-edge);
+  }
+  .profile-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0,64,255,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,64,255,0.06);
+  }
+  :global([data-theme="dark"]) .profile-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,64,255,0.12);
   }
   :global([data-theme="dark"]) .profile-card {
-    background: rgba(255,255,255,0.03);
-    border-color: rgba(255,255,255,0.05);
-  }
-  :global([data-theme="dark"]) .profile-card {
-    border-color: rgba(255,255,255,0.05);
+    background: transparent;
+    border-color: rgba(80,90,110,0.4);
   }
   .profile-top {
     display: flex;
     gap: 24px;
     margin-bottom: 28px;
   }
-  .profile-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid rgba(128,128,128,0.12);
-  }
-  .profile-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
-  .profile-avatar:hover img { transform: scale(1.06); }
   .profile-info { flex: 1; min-width: 0; }
   .profile-name { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .profile-role { font-size: 0.8rem; color: var(--text); opacity: 0.4; margin-bottom: 14px; letter-spacing: 0.5px; }
@@ -226,7 +187,7 @@ const socials = [
     overflow: hidden;
   }
   .stat {
-    background: var(--bg);
+    background: transparent;
     text-align: center;
     padding: 22px 10px;
   }
@@ -250,15 +211,28 @@ const socials = [
   /* ── Cards ── */
   .skills-card, .timeline-card {
     border-radius: 22px;
-    background: rgba(128,128,128,0.04);
-    border: 1px solid rgba(128,128,128,0.08);
+    background: transparent;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(120,120,120,0.5);
     padding: clamp(24px, 4vw, 36px);
     margin-bottom: 24px;
+    transition: border-color 0.3s, transform 0.3s ease;
+    box-shadow: 3px 3px 10px var(--nav-edge), 1px 1px 3px var(--nav-edge);
+  }
+  .skills-card:hover, .timeline-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0,64,255,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,64,255,0.06);
+  }
+  :global([data-theme="dark"]) .skills-card:hover,
+  :global([data-theme="dark"]) .timeline-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,64,255,0.12);
   }
   :global([data-theme="dark"]) .skills-card,
   :global([data-theme="dark"]) .timeline-card {
-    background: rgba(255,255,255,0.03);
-    border-color: rgba(255,255,255,0.05);
+    background: transparent;
+    border-color: rgba(80,90,110,0.4);
   }
   .section-heading {
     font-size: 0.68rem;
@@ -308,7 +282,7 @@ const socials = [
     width: 8px; height: 8px;
     border-radius: 50%;
     border: 2px solid rgba(128,128,128,0.2);
-    background: var(--bg);
+    background: transparent;
     z-index: 1;
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   }
@@ -339,7 +313,6 @@ const socials = [
   .tl-desc { font-size: 0.8rem; color: var(--text); opacity: 0.4; line-height: 1.6; }
 
   @media (max-width: 768px) {
-    .hero-title { font-size: clamp(1.8rem, 7vw, 2.8rem); }
     .profile-top { flex-direction: column; align-items: center; text-align: center; }
     .profile-links { justify-content: center; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }

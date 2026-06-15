@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
-import Icon from '../components/Icon.astro';
+import Snow from '../components/Snow.astro';
+import HeroTitle from '../components/HeroTitle.astro';
 
 const works = [
   { src: '/img/bg/0-1.webp', title: '虚空之瞳', model: 'Midjourney', tag: '奇幻' },
@@ -19,14 +20,11 @@ const works = [
 ---
 
 <BaseLayout title="AIGC - 懒得取名">
+  <Snow />
   <Header />
 
   <main class="page">
-    <header class="hero">
-      <p class="hero-eyebrow">AI Gallery</p>
-      <h1 class="hero-title">AIGC</h1>
-      <p class="hero-desc">算法与美学的交界地带。每一张都是与机器的一场沉默对谈。</p>
-    </header>
+    <HeroTitle title="AIGC" subtitle="算法与美学的交界地带。每一张都是与机器的一场沉默对谈。" />
 
     <div class="gallery" aria-label="AI 生成作品集">
       {works.map((w, i) => (
@@ -54,39 +52,10 @@ const works = [
   .page {
     width: 100%;
     min-height: calc(100vh - 76px);
-    background: var(--bg);
-    padding: clamp(64px, 12vh, 100px) clamp(20px, 4vw, 48px) 120px;
+    background: transparent;
+    padding: 0 clamp(20px, 4vw, 48px) 120px;
     max-width: 1120px;
     margin: 0 auto;
-  }
-
-  .hero {
-    margin-bottom: clamp(48px, 8vh, 80px);
-  }
-  .hero-eyebrow {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    color: var(--text);
-    opacity: 0.3;
-    margin-bottom: 14px;
-  }
-  .hero-title {
-    font-family: 'Georgia','Noto Serif SC',serif;
-    font-size: clamp(2.8rem, 6vw, 4.5rem);
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 14px;
-  }
-  .hero-desc {
-    font-size: 0.92rem;
-    color: var(--text);
-    opacity: 0.38;
-    letter-spacing: 0.8px;
-    line-height: 1.7;
-    max-width: 440px;
   }
 
   /* Gallery */
@@ -106,12 +75,15 @@ const works = [
     border-radius: 18px;
     overflow: hidden;
     background: transparent;
-    border: 1px solid rgba(128,128,128,0.08);
-    transition: border-color 0.3s ease, box-shadow 0.4s ease, transform 0.35s cubic-bezier(0.22,0.61,0.36,1);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(120,120,120,0.5);
+    transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.22,0.61,0.36,1);
     cursor: pointer;
+    box-shadow: 3px 3px 10px var(--nav-edge), 1px 1px 3px var(--nav-edge);
   }
   :global([data-theme="dark"]) .card {
-    border-color: rgba(255,255,255,0.06);
+    border-color: rgba(80,90,110,0.4);
   }
   .card:hover {
     border-color: rgba(0,64,255,0.25);
@@ -186,7 +158,6 @@ const works = [
   .reveal.visible { opacity: 1; transform: translateY(0); }
 
   @media (max-width: 768px) {
-    .hero-title { font-size: clamp(1.8rem, 7vw, 2.8rem); }
     .card { border-radius: 14px; }
     .card-caption { padding: 14px 16px; }
   }

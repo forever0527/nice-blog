@@ -3,21 +3,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
-
-const photos = [
-  { src: '/img/bg/1.webp', title: '城市 · 黄昏', year: '2025', month: '01', day: '15' },
-  { src: '/img/bg/2.webp', title: '山间 · 晨雾', year: '2025', month: '02', day: '08' },
-  { src: '/img/bg/3.webp', title: '海边 · 日落', year: '2025', month: '03', day: '22' },
-  { src: '/img/bg/4.webp', title: '林间 · 小径', year: '2025', month: '04', day: '10' },
-  { src: '/img/bg/5.webp', title: '古镇 · 巷口', year: '2025', month: '05', day: '17' },
-  { src: '/img/bg/0-1.webp', title: '雪山 · 远眺', year: '2025', month: '06', day: '03' },
-  { src: '/img/bg/0-2.webp', title: '湖光 · 倒影', year: '2025', month: '07', day: '29' },
-  { src: '/img/bg/0-3.webp', title: '秋日 · 落叶', year: '2025', month: '08', day: '14' },
-];
+import Snow from '../components/Snow.astro';
+import HeroTitle from '../components/HeroTitle.astro';
+import { photos } from '../content/photos';
 
 const N = photos.length;
-const COPIES = 6;
+const COPIES = 10;
 const pool = Array.from({ length: COPIES }, () => photos).flat();
+const GRID_COPIES = 3;
+const gridPool = Array.from({ length: GRID_COPIES }, () => photos).flat();
 
 const poses = [
   { x: 5,  r: -8,  z: 1 },
@@ -32,9 +26,23 @@ const poses = [
 ---
 
 <BaseLayout title="Photo - 懒得取名">
+  <Snow />
   <Header />
 
   <main class="photo-page desktop-layout" id="photo-page">
+    <div class="photo-timeline-left" id="photo-timeline-left">
+      {photos.map((p, i) => (
+        <a class="timeline-label" href={`#photo-${i}`}>{p.year}</a>
+      ))}
+    </div>
+    <div class="photo-timeline-right" id="photo-timeline-right">
+      {photos.map((p, i) => (
+        <a class="timeline-label" href={`#photo-${i}`}>{p.month}</a>
+      ))}
+    </div>
+
+    <HeroTitle title="旅途中的一瞬间" subtitle="那些被镜头定格的时光，是旅途中最温柔的记忆" />
+
     <section class="slant-hero" id="slant-hero">
       <div class="slider" id="slider">
         <div class="slide-track" id="slide-track">
@@ -55,14 +63,31 @@ const poses = [
         </div>
       </div>
     </section>
+
+    <section class="photo-grid-section">
+      <div class="photo-grid">
+        {gridPool.map((p, i) => (
+          <a href={`/photo/${p.slug}`} class={`photo-grid-item item-${i % N}`} id={`photo-${i}`}>
+            <img src={p.src} alt={p.title} loading="lazy" decoding="async" />
+            <span class="photo-grid-side-date left">{p.year}</span>
+            <span class="photo-grid-side-date right">{p.month}.{p.day}</span>
+            <div class="photo-grid-info">
+              <div class="photo-grid-info-title">{p.title}</div>
+              <div class="photo-grid-info-date">{p.year}.{p.month}.{p.day}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
   </main>
 
   <main class="photo-page mobile-layout" id="photo-page-m">
+    <HeroTitle title="旅途中的一瞬间" subtitle="那些被镜头定格的时光，是旅途中最温柔的记忆" />
     <div class="cascade-stage" id="cascade-stage">
       {photos.map((p, i) => {
         const pose = poses[i];
         return (
-          <article class="cascade-card" id={`card-${i}`} data-index={String(i)} data-src={p.src}
+          <a href={`/photo/${p.slug}`} class="cascade-card" id={`card-${i}`} data-index={String(i)} data-src={p.src}
             style={`--x:${pose.x}%;--r:${pose.r}deg;--z:${pose.z};--i:${i}`}>
             <div class="cascade-card-inner">
               <img src={p.src} alt={p.title} loading="lazy" decoding="async" />
@@ -71,7 +96,7 @@ const poses = [
                 <span class="cascade-card-date">{p.year}.{p.month}.{p.day}</span>
               </div>
             </div>
-          </article>
+          </a>
         );
       })}
     </div>
@@ -83,20 +108,19 @@ const poses = [
 
   <Footer />
   <FloatingButtons />
-</BaseLayout>
 
 <script>
   (function () {
     if (window.innerWidth < 769) return;
-    var slider = document.getElementById('slider');
+    var hero = document.getElementById('slant-hero');
     var track = document.getElementById('slide-track');
-    if (!slider || !track) return;
+    if (!hero || !track) return;
 
     var N = 8;
-    var STEP = 410;
+    var STEP = 320;
     var SEQ_W = N * STEP;
 
-    var currentX = -(N * STEP * 2);
+    var currentX = 0;
     var targetX = currentX;
     var raf;
 
@@ -128,18 +152,18 @@ const poses = [
     }
 
     function loop() {
-      if (currentX > -SEQ_W * 1) { currentX -= SEQ_W; targetX -= SEQ_W; }
-      if (currentX < -SEQ_W * 4) { currentX += SEQ_W; targetX += SEQ_W; }
+      if (currentX > 0) { currentX -= SEQ_W; targetX -= SEQ_W; }
+      if (currentX < -SEQ_W * 3) { currentX += SEQ_W; targetX += SEQ_W; }
       if (reduced) { currentX = targetX; }
-      else { currentX += (targetX - currentX) * 0.05; }
+      else { currentX += (targetX - currentX) * 0.08; }
       render();
       parallax();
       raf = requestAnimationFrame(loop);
     }
 
-    slider.addEventListener('wheel', function (e) {
+    hero.addEventListener('wheel', function (e) {
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      var r = slider.getBoundingClientRect();
+      var r = hero.getBoundingClientRect();
       var bandTop = r.top + r.height * 0.35;
       var bandBot = r.bottom - r.height * 0.35;
       if (e.clientY < bandTop || e.clientY > bandBot) return;
@@ -147,7 +171,7 @@ const poses = [
       targetX -= Math.max(-150, Math.min(e.deltaY * 1.75, 150));
     }, { passive: false });
 
-    slider.addEventListener('mousedown', function (e) {
+    hero.addEventListener('mousedown', function (e) {
       e.preventDefault();
       dragging = true; hasDragged = false;
       dragStartX = e.clientX; lastMouseX = e.clientX; dragStartTarget = targetX;
@@ -166,19 +190,19 @@ const poses = [
       setTimeout(function () { hasDragged = false; }, 100);
     }
     document.addEventListener('mouseup', endDrag);
-    slider.addEventListener('mouseleave', endDrag);
-    slider.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    hero.addEventListener('mouseleave', endDrag);
+    hero.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
-    slider.addEventListener('touchstart', function (e) {
+    hero.addEventListener('touchstart', function (e) {
       dragging = true; hasDragged = false;
       dragStartX = e.touches[0].clientX; dragStartTarget = targetX;
     });
-    slider.addEventListener('touchmove', function (e) {
+    hero.addEventListener('touchmove', function (e) {
       if (!dragging) return;
       targetX = dragStartTarget + (e.touches[0].clientX - dragStartX) * 1.5;
       if (Math.abs(e.touches[0].clientX - dragStartX) > 5) hasDragged = true;
     });
-    slider.addEventListener('touchend', function () {
+    hero.addEventListener('touchend', function () {
       dragging = false;
       setTimeout(function () { hasDragged = false; }, 100);
     });
@@ -188,8 +212,8 @@ const poses = [
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
         if (window.innerWidth < 769) return;
-        while (currentX > -SEQ_W * 1) currentX -= SEQ_W;
-        while (currentX < -SEQ_W * 4) currentX += SEQ_W;
+        while (currentX > 0) currentX -= SEQ_W;
+        while (currentX < -SEQ_W * 3) currentX += SEQ_W;
         targetX = currentX;
         render();
         parallax();
@@ -235,77 +259,277 @@ const poses = [
   })();
 </script>
 
-<style>
-  :global(.theme-header-decor) { display: none !important; }
-  :global(.snow-container) { display: none !important; }
+<script>
+  (function () {
+    var tl = document.getElementById('photo-timeline-left');
+    var tr = document.getElementById('photo-timeline-right');
+    var hero = document.getElementById('slant-hero');
+    if (!tl || !tr || !hero) return;
 
+    function checkTimeline() {
+      var heroRect = hero.getBoundingClientRect();
+      var inView = heroRect.top < window.innerHeight * 0.6 && heroRect.bottom > window.innerHeight * 0.2;
+      tl.classList.toggle('hidden', inView);
+      tr.classList.toggle('hidden', inView);
+    }
+
+    window.addEventListener('scroll', checkTimeline, { passive: true });
+    checkTimeline();
+  })();
+
+  (function () {
+    var items = document.querySelectorAll('.photo-grid-item');
+    if (!items.length) return;
+
+    items.forEach(function (item, i) {
+      item.style.setProperty('--d', (i % 6) * 0.06 + 's');
+    });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('mosaic-in');
+        }
+      });
+    }, { threshold: 0.05 });
+
+    items.forEach(function (item) { observer.observe(item); });
+  })();
+</script>
+
+</BaseLayout>
+
+<style>
   .photo-page {
     width: 100%;
-    background-color: var(--bg);
-    background-image: repeating-linear-gradient(
-      transparent, transparent 47px,
-      rgba(128,128,128,0.08) 47px, rgba(128,128,128,0.08) 48px
-    );
-    background-size: 100% 48px;
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    position: relative;
   }
-  :global([data-theme="dark"]) .photo-page {
-    background-image: repeating-linear-gradient(
-      transparent, transparent 47px,
-      rgba(255,255,255,0.06) 47px, rgba(255,255,255,0.06) 48px
-    );
-    background-size: 100% 48px;
+  .photo-page::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 80px 80px;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .photo-grid-section {
+    padding: 0 5vw 40px;
+    width: 100%;
+    position: relative;
+  }
+
+  .photo-timeline-left,
+  .photo-timeline-right {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 200;
+    transition: opacity 0.4s ease;
+  }
+
+  .photo-timeline-left {
+    left: 16px;
+  }
+
+  .photo-timeline-right {
+    right: 16px;
+  }
+
+  .timeline-label {
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.7;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .timeline-label:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .photo-timeline-left.hidden,
+  .photo-timeline-right.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 300px);
+    grid-auto-rows: 420px;
+    gap: 120px;
+    justify-content: center;
+    padding: 0 80px;
+  }
+
+  .photo-grid-item {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    scroll-margin-top: 80px;
+    transition: transform 0.3s ease, opacity 0.6s ease var(--d, 0s);
+    opacity: 0;
+    text-decoration: none;
+    display: block;
+  }
+  .photo-grid-item.mosaic-in {
+    opacity: 1;
+  }
+
+  .photo-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+    transition: transform 0.5s ease;
+  }
+
+  .photo-grid-item:hover img {
+    transform: scale(1.05);
+  }
+
+  .photo-grid-side-date {
+    position: absolute;
+    writing-mode: vertical-rl;
+    color: var(--text);
+    opacity: 0.25;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    transition: opacity 0.3s ease;
+  }
+
+  .photo-grid-item:hover .photo-grid-side-date {
+    opacity: 0.6;
+  }
+
+  .photo-grid-side-date.left {
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .photo-grid-side-date.right {
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .photo-grid-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .photo-grid-item:hover .photo-grid-info {
+    opacity: 1;
+  }
+
+  .photo-grid-info-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .photo-grid-info-date {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .item-0 { transform: rotate(-1.5deg) translateX(-20px); }
+  .item-1 { transform: rotate(1.8deg) translateY(10px); }
+  .item-2 { transform: rotate(-0.8deg) translateY(-8px); }
+  .item-3 { transform: rotate(2.2deg) translateY(6px); }
+  .item-4 { transform: rotate(-1.2deg) translateX(20px) translateY(-4px); }
+  .item-5 { transform: rotate(0.6deg) translateY(12px); }
+  .item-6 { transform: rotate(-2deg) translateY(-10px); }
+  .item-7 { transform: rotate(1.4deg) translateX(-20px) translateY(8px); }
+
+  .photo-grid-item:hover {
+    transform: rotate(0deg) !important;
+    z-index: 2;
   }
 
   .mobile-layout { display: none; }
   .desktop-layout {
-    height: calc(100vh - 76px);
-    overflow: clip;
-    position: relative;
+    min-height: 100vh;
   }
-  .slant-hero { height: 100%; }
+
+  .slant-hero {
+    height: 60vh;
+    margin-top: 0;
+    margin-bottom: 80px;
+    position: relative;
+    cursor: grab;
+  }
+
+  .slant-hero:active { cursor: grabbing; }
 
   .slider {
     position: absolute;
-    top: 10vh;
-    left: -20%;
-    width: 140%;
-    bottom: 0;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 320px;
+    transform: translateY(-50%);
     overflow: visible;
     user-select: none;
-    cursor: grab;
-    transform: rotate(15deg);
-    transform-origin: center center;
   }
   .slider:active { cursor: grabbing; }
 
   .slide-track {
     position: absolute;
-    width: 100%;
+    top: 0;
+    left: 0;
     height: 100%;
     display: flex;
+    align-items: center;
     will-change: transform;
   }
 
   .slide {
     flex-shrink: 0;
-    width: 350px;
-    margin: 0 30px;
+    width: 240px;
+    margin: 0 40px;
     position: relative;
-    top: 50%;
     overflow: visible;
     display: flex;
     flex-direction: column;
     cursor: pointer;
   }
-  .slide.even { transform: translateY(-50%) translateY(-4vh); }
-  .slide.odd  { transform: translateY(-50%) translateY(4vh); }
+  .slide.even { transform: translateY(-4vh); }
+  .slide.odd  { transform: translateY(4vh); }
 
   .slide-image {
     width: 100%;
     aspect-ratio: 2 / 3;
     overflow: hidden;
     border-radius: 16px;
+    position: relative;
   }
+
   .slide-image img {
     width: 100%;
     height: 100%;
@@ -313,6 +537,8 @@ const poses = [
     will-change: transform;
     transform: scale(2.25);
     user-select: none;
+    pointer-events: none;
+    border-radius: 16px;
   }
 
   .slide-overlay {
@@ -323,6 +549,9 @@ const poses = [
     gap: 8px;
     opacity: 0;
     transition: opacity 0.25s ease;
+    pointer-events: none;
+    position: relative;
+    z-index: 10;
   }
   .slide:hover .slide-overlay { opacity: 1; }
 
@@ -363,20 +592,19 @@ const poses = [
       transform: translateX(calc(var(--x) - 50%)) rotate(var(--r)) translateY(calc(var(--i) * 4px - 12px));
       z-index: var(--z); cursor: pointer;
       -webkit-tap-highlight-color: transparent; user-select: none;
+      text-decoration: none;
+      color: inherit;
     }
     .cascade-card.dimmed { cursor: default; }
     .cascade-card.active { cursor: default; }
     .cascade-card-inner {
       display: block; width: 100%;
       border-radius: 14px; overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0,0,0,.07);
-    }
-    :global([data-theme="dark"]) .cascade-card-inner {
-      box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
+      box-shadow: 3px 3px 8px var(--nav-edge), 1px 1px 3px var(--nav-edge);
     }
     .cascade-card img { display: block; width: 100%; height: 250px; object-fit: cover; }
-    .cascade-card-text { padding: 10px 14px 12px; background: #fff; }
-    :global([data-theme="dark"]) .cascade-card-text { background: #1a2235; }
+    .cascade-card-text { padding: 10px 14px 12px; background: transparent; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    :global([data-theme="dark"]) .cascade-card-text { background: transparent; }
     .cascade-card-title {
       display: block;
       font-family: 'Georgia','Noto Serif SC','STSong','KaiTi',serif;

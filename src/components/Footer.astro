@@ -7,7 +7,7 @@ const currentYear = new Date().getFullYear();
   <div class="footer-inner">
     <div class="footer-info">
       <h3>About This Site</h3>
-      <span><Icon name="shopping-cart" size={14} /> 商店: <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a> <span style="margin:0 5px">|</span> <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a></span>
+      <span class="footer-shop"><Icon name="shopping-cart" size={14} /> 商店: <a href="https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5" style="color: var(--text);">我不是卡神</a> <span style="margin:0 5px">|</span> <a href="https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40" style="color: var(--text);">卡布奇诺</a></span>
       <p>致力于提供极致的交互体验。本站基于 Astro 构建。</p>
     </div>
     <div class="footer-divider"></div>
@@ -17,8 +17,7 @@ const currentYear = new Date().getFullYear();
     </div>
     <div class="footer-copyright">
       <div class="tail">
-        <a href="/archive">
-           <!-- 图片路径示例 -->
+        <a href="/">
           <img src="/img/laa/char.webp" alt="尾句" style="height:auto; width:300px; filter: invert(var(--invert-rate, 1));">
         </a>
       </div>
@@ -28,28 +27,19 @@ const currentYear = new Date().getFullYear();
 </footer>
 
 <script>
-  function updateRuntime() {
-    const startTime = new Date('2025-10-31T12:00:00').getTime();
-    const now = new Date().getTime();
-    const diff = now - startTime;
-    
-    if (diff < 0) {
-       const el = document.getElementById('site-runtime');
-       if(el) el.textContent = "即将开启";
-       return;
-    }
+  const startTime = new Date('2025-10-31T12:00:00').getTime();
+  const el = document.getElementById('site-runtime');
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    const runtimeElement = document.getElementById('site-runtime');
-    if (runtimeElement) {
-      runtimeElement.textContent = `${days}天 ${hours}小时 ${minutes}分 ${seconds}秒`;
-    }
+  function updateRuntime() {
+    if (!el) return;
+    const diff = Date.now() - startTime;
+    const d = Math.floor(diff / 864e5);
+    const h = Math.floor((diff % 864e5) / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1e3);
+    el.textContent = `${d}天 ${h}小时 ${m}分 ${s}秒`;
   }
 
-  setInterval(updateRuntime, 1000);
   updateRuntime();
+  setInterval(updateRuntime, 1000);
 </script>
