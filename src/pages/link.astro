@@ -5,15 +5,19 @@ import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
 import HeroTitle from '../components/HeroTitle.astro';
+import linksData from '../content/links.json';
 
-const links = [
-  { name: 'GitHub', desc: '代码托管与协作平台', url: 'https://github.com' },
-  { name: 'Vercel', desc: '前端部署与边缘计算', url: 'https://vercel.com' },
-  { name: 'Astro', desc: '高性能静态站点框架', url: 'https://astro.build' },
-  { name: 'Dribbble', desc: '设计师作品展示社区', url: 'https://dribbble.com' },
-  { name: 'Unsplash', desc: '免费高分辨率图片库', url: 'https://unsplash.com' },
-  { name: 'CodePen', desc: '在线前端代码与分享', url: 'https://codepen.io' },
-];
+const linkGroups = linksData.groups.map(g => ({
+  ...g,
+  links: g.links.sort((a, b) => a.name.localeCompare(b.name)),
+}));
+const subtitle = linksData.subtitle;
+const pageTitle = linksData.title || '常用工具';
+
+const N = linkGroups.length;
+const COPIES = 6;
+const pool = Array.from({ length: COPIES }, () => linkGroups).flat();
+const totalGroups = N;
 ---
 
 <BaseLayout title="Links - 懒得取名">
@@ -21,66 +25,419 @@ const links = [
   <Header />
 
   <main class="link-page">
-    <HeroTitle title="友链" subtitle="值得常访的角落，数字世界里的邻居。" />
+    <div class="link-header" id="link-header">
+      <HeroTitle title={pageTitle} subtitle={subtitle} />
+    </div>
 
-    <nav class="link-grid" aria-label="友情链接">
-      {links.map(l => (
-        <a href={l.url} target="_blank" rel="noopener noreferrer" class="link-card">
-          <span class="link-card-icon" aria-hidden="true">{l.name.charAt(0)}</span>
-          <span class="link-card-body">
-            <span class="link-card-name">{l.name}</span>
-            <span class="link-card-desc">{l.desc}</span>
-          </span>
-          <svg class="link-card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M7 17L17 7M17 7H7M17 7V17"/>
-          </svg>
-        </a>
+    <div class="link-carousel">
+      <button class="link-arrow link-arrow-left" id="link-prev" aria-label="上一组">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+
+      <div class="link-clip">
+        <div class="link-viewport">
+          <div class="link-track" id="link-track">
+            {pool.map((group, gi) => (
+              <div class="link-slide" data-group={String(gi % N)}>
+                <nav class="link-grid" aria-label={group.label}>
+                  {group.links.map(l => (
+                    <a href={l.url} target="_blank" rel="noopener noreferrer" class="link-card">
+                      <span class="link-card-icon" aria-hidden="true">{l.name.charAt(0).toUpperCase()}</span>
+                      <span class="link-card-body">
+                        <span class="link-card-name">{l.name}</span>
+                        <span class="link-card-desc">{l.desc}</span>
+                      </span>
+                      <svg class="link-card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                      </svg>
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <button class="link-arrow link-arrow-right" id="link-next" aria-label="下一组">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="link-dots" id="link-dots">
+      {linkGroups.map((_, i) => (
+        <span class={`link-dot ${i === 0 ? 'active' : ''}`} data-index={i}></span>
       ))}
-    </nav>
+    </div>
   </main>
 
   <Footer />
   <FloatingButtons />
 </BaseLayout>
 
+<script define:vars={{ totalGroups, N, COPIES, labels: linkGroups.map(g => g.label) }}>
+  (function () {
+    var track = document.getElementById('link-track');
+    var prevBtn = document.getElementById('link-prev');
+    var nextBtn = document.getElementById('link-next');
+    var dotsContainer = document.getElementById('link-dots');
+    var dots = dotsContainer ? dotsContainer.querySelectorAll('.link-dot') : [];
+    var header = document.getElementById('link-header');
+    var titleEl = header ? header.querySelector('h1') : null;
+    var clip = track ? track.closest('.link-clip') : null;
+
+    var slides = track ? track.querySelectorAll('.link-slide') : [];
+    var currentX = 0;
+    var targetX = 0;
+    var currentGroup = 0;
+    var targetSlideIdx = 0;
+    var slideW = 0;
+    var SEQ_W = 0;
+    var raf = null;
+
+    var dragging = false;
+    var dragStartX = 0;
+    var dragStartTarget = 0;
+    var lastDragX = 0;
+
+    var mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var reduced = mqReduced.matches;
+    mqReduced.addEventListener('change', function (e) { reduced = e.matches; });
+
+    function measure() {
+      if (!clip) return;
+      slideW = clip.clientWidth;
+      SEQ_W = N * slideW;
+    }
+
+    function updateTitle() {
+      if (!titleEl) return;
+      titleEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      titleEl.style.opacity = '0';
+      titleEl.style.transform = 'translateY(-6px)';
+      setTimeout(function () {
+        titleEl.textContent = labels[currentGroup];
+        titleEl.style.opacity = '1';
+        titleEl.style.transform = 'translateY(0)';
+      }, 250);
+    }
+
+    function updateDots() {
+      dots.forEach(function (d, i) {
+        d.classList.toggle('active', i === currentGroup);
+      });
+    }
+
+    function detectGroup() {
+      if (SEQ_W === 0) return;
+      var idx = Math.round(-currentX / slideW);
+      var g = ((idx % N) + N) % N;
+      if (g !== currentGroup) {
+        currentGroup = g;
+        updateDots();
+        updateTitle();
+      }
+    }
+
+    function render() {
+      if (!track) return;
+      track.style.transform = 'translate3d(' + currentX + 'px, 0, 0)';
+    }
+
+    function loop() {
+      if (dragging) {
+        currentX = targetX;
+      } else {
+        if (reduced) {
+          currentX = targetX;
+        } else {
+          currentX += (targetX - currentX) * 0.12;
+        }
+      }
+
+      if (SEQ_W > 0) {
+        if (currentX > slideW * 0.5) {
+          currentX -= SEQ_W;
+          targetX -= SEQ_W;
+          targetSlideIdx += N;
+        }
+        if (currentX < -(SEQ_W + slideW * 0.5)) {
+          currentX += SEQ_W;
+          targetX += SEQ_W;
+          targetSlideIdx -= N;
+        }
+      }
+
+      render();
+      detectGroup();
+      raf = requestAnimationFrame(loop);
+    }
+
+    function goToGroup(index) {
+      if (SEQ_W === 0) measure();
+      var diff = index - currentGroup;
+      if (diff > N / 2) diff -= N;
+      if (diff < -N / 2) diff += N;
+      targetSlideIdx += diff;
+      targetX = -targetSlideIdx * slideW;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        var idx = ((currentGroup - 1) % N + N) % N;
+        goToGroup(idx);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        var idx = (currentGroup + 1) % N;
+        goToGroup(idx);
+      });
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        var idx = parseInt(dot.dataset.index);
+        goToGroup(idx);
+      });
+    });
+
+    if (clip) {
+      clip.addEventListener('touchstart', function (e) {
+        dragging = true;
+        dragStartX = e.touches[0].clientX;
+        dragStartTarget = targetX;
+        lastDragX = dragStartX;
+      }, { passive: true });
+
+      clip.addEventListener('touchmove', function (e) {
+        if (!dragging) return;
+        var x = e.touches[0].clientX;
+        targetX = dragStartTarget + (x - dragStartX) * 1.2;
+        lastDragX = x;
+      }, { passive: true });
+
+      clip.addEventListener('touchend', function () {
+        if (!dragging) return;
+        dragging = false;
+        var dx = lastDragX - dragStartX;
+        var velocity = dx / 0.3;
+        var momentum = velocity * 0.15;
+        targetX += momentum;
+        var nearest = Math.round(-targetX / slideW);
+        targetX = -nearest * slideW;
+        targetSlideIdx = nearest;
+      }, { passive: true });
+
+      clip.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        dragging = true;
+        dragStartX = e.clientX;
+        dragStartTarget = targetX;
+        lastDragX = dragStartX;
+        clip.style.cursor = 'grabbing';
+      });
+
+      document.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        targetX = dragStartTarget + (e.clientX - dragStartX) * 1.2;
+        lastDragX = e.clientX;
+      });
+
+      document.addEventListener('mouseup', function () {
+        if (!dragging) return;
+        dragging = false;
+        clip.style.cursor = '';
+        var dx = lastDragX - dragStartX;
+        var velocity = dx / 0.3;
+        var momentum = velocity * 0.15;
+        targetX += momentum;
+        var nearest = Math.round(-targetX / slideW);
+        targetX = -nearest * slideW;
+        targetSlideIdx = nearest;
+      });
+
+      clip.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    }
+
+    measure();
+    raf = requestAnimationFrame(loop);
+
+    var firstSlide = slides[0];
+    if (firstSlide) {
+      var firstCards = firstSlide.querySelectorAll('.link-card');
+      firstCards.forEach(function (card, i) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px) scale(0.97)';
+        setTimeout(function () {
+          card.style.transition = 'opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1)';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0) scale(1)';
+        }, 150 + i * 60);
+      });
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        measure();
+        var nearest = Math.round(-currentX / slideW);
+        currentX = -nearest * slideW;
+        targetX = currentX;
+        targetSlideIdx = nearest;
+        render();
+      }, 150);
+    });
+  })();
+</script>
+
 <style>
-  /* Page — 夸张极简：大量留白 */
   .link-page {
     width: 100%;
     min-height: calc(100vh - 76px);
-    background-color: transparent;
-    padding: 0 48px 120px;
-    max-width: 680px;
+    padding: 40px clamp(20px, 4vw, 48px) 120px;
+    max-width: 900px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* Grid */
+  .link-header {
+    text-align: center;
+    margin-bottom: 40px;
+    width: 100%;
+  }
+
+  .link-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: -36px;
+  }
+
+  .link-clip {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 18px;
+    cursor: grab;
+  }
+  .link-clip:active {
+    cursor: grabbing;
+  }
+
+  .link-viewport {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .link-track {
+    display: flex;
+    will-change: transform;
+  }
+
+  .link-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+    padding: 16px 20px;
+    user-select: none;
+  }
+  :global([data-theme="dark"]) .link-slide {
+    padding: 20px 20px;
+  }
+
   .link-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
+  }
+  :global([data-theme="dark"]) .link-grid {
+    gap: 24px;
   }
 
-  /* Card */
-  .link-card {
+  .link-arrow {
+    position: sticky;
+    top: 50vh;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(120,120,120,0.5);
+    box-shadow: 3px 3px 8px var(--nav-edge), 1px 1px 3px var(--nav-edge);
+    color: var(--text);
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    border-radius: 16px;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 10;
+    transition: border-color 0.2s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  }
+  .link-arrow:hover {
+    border-color: rgba(0,64,255,0.3);
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .link-arrow:active {
+    transform: scale(0.92);
+  }
+  :global([data-theme="dark"]) .link-arrow {
+    border-color: rgba(80,90,110,0.4);
+  }
+
+  .link-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .link-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(128,128,128,0.3);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .link-dot.active {
+    background: #0040ff;
+    transform: scale(1.4);
+  }
+  :global([data-theme="dark"]) .link-dot.active {
+    background: #4d8aff;
+  }
+
+  .link-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    border-radius: 14px;
+    width: 100%;
     background: transparent;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 1px solid rgba(120,120,120,0.5);
     text-decoration: none;
     color: var(--text);
-    transition: border-color 0.2s ease, transform 0.3s ease;
+    transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.22,0.61,0.36,1), box-shadow 0.3s ease;
     cursor: pointer;
-    box-shadow: 3px 3px 8px var(--nav-edge), 1px 1px 3px var(--nav-edge);
+    box-shadow: 3px 3px 10px var(--nav-edge), 1px 1px 3px var(--nav-edge);
   }
   .link-card:hover {
     border-color: rgba(0,64,255,0.25);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,64,255,0.06);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,64,255,0.04);
     transform: translateY(-2px);
   }
   :global([data-theme="dark"]) .link-card {
@@ -88,7 +445,7 @@ const links = [
     border-color: rgba(80,90,110,0.4);
   }
   :global([data-theme="dark"]) .link-card:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,64,255,0.12);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(64,138,255,0.06);
   }
 
   .link-card:focus-visible {
@@ -96,17 +453,16 @@ const links = [
     outline-offset: 2px;
   }
 
-  /* Icon — 首字母 */
   .link-card-icon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
     background: rgba(128,128,128,0.06);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Georgia',serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--text);
     opacity: 0.45;
@@ -119,7 +475,6 @@ const links = [
     opacity: 1;
   }
 
-  /* Body */
   .link-card-body {
     flex: 1;
     min-width: 0;
@@ -128,17 +483,16 @@ const links = [
     gap: 2px;
   }
   .link-card-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
   .link-card-desc {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     opacity: 0.4;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
   }
 
-  /* Arrow */
   .link-card-arrow {
     flex-shrink: 0;
     opacity: 0.18;
@@ -149,21 +503,34 @@ const links = [
     transform: translate(2px, -2px);
   }
 
-  /* 响应式 */
   @media (max-width: 768px) {
     .link-page {
-      padding: 0 20px 80px;
+      padding: 24px 24px 80px;
+    }
+    .link-carousel {
+      gap: 16px;
+    }
+    .link-arrow {
+      display: none !important;
+    }
+    .link-slide {
+      padding: 12px 16px;
     }
     .link-card {
       padding: 16px 18px;
     }
+    .link-card:active {
+      transform: none !important;
+      box-shadow: 3px 3px 10px var(--nav-edge), 1px 1px 3px var(--nav-edge) !important;
+    }
   }
 
-  /* 无障碍 */
   @media (prefers-reduced-motion: reduce) {
     .link-card,
     .link-card-icon,
-    .link-card-arrow {
+    .link-card-arrow,
+    .link-arrow,
+    .link-dot {
       transition: none;
     }
   }

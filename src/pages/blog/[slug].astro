@@ -1,17 +1,4 @@
 ---
-/**
- * 文章详情页模板 — 封面图 + 文艺排版 + 功能组件
- *
- * 功能清单:
- *   1. 阅读进度条 — 页面顶部极细蓝色线，随滚动从 0% 到 100%
- *   2. 浮动目录 — 桌面端右侧悬浮 h2 标题锚点，点击跳转对应段落
- *   3. 上一篇/下一篇 — 文章底部左右箭头导航，保持阅读连贯
- *   4. 文内图片放大 — 点击正文图片弹出全屏查看，深色遮罩 + ESC 关闭
- *
- * 后续扩展:
- *   - 中间插入图片: 直接在 .md 里用 ![描述](图片路径) 即可，本模板已支持
- *   - 后台管理: 计划通过 Netlify CMS (public/admin/) 在线编辑 .md 文件
- */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -28,15 +15,12 @@ const { post } = Astro.props;
 const { title, desc, date, tag, color, img } = post.data;
 const { Content } = await render(post);
 
-// 获取相邻文章 + 最近文章（按日期排序）
 const allPosts = (await getCollection('blog'))
   .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
 const currentIdx = allPosts.findIndex(p => p.slug === post.slug);
 const prevPost = currentIdx > 0 ? allPosts[currentIdx - 1] : null;
 const nextPost = currentIdx < allPosts.length - 1 ? allPosts[currentIdx + 1] : null;
-// 侧边栏最近文章（排除当前文章）
 const recentPosts = allPosts.filter(p => p.slug !== post.slug).slice(0, 5);
-// 阅读时间估算（中文 ~400字/分钟）
 const wordCount = post.body ? post.body.length : 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / 400));
 ---
@@ -44,11 +28,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
 <BaseLayout title={`${title} - 懒得取名`}>
   <Header />
 
-  <!-- 阅读进度条 — 颜色跟随文章标签 -->
   <div class="read-progress" id="read-progress" style={`background: linear-gradient(to right, ${color || '#0040ff'}, ${color || '#0040ff'}cc)`}></div>
 
   <article class="post">
-    <!-- 顶图 — 标题叠加在图片左下 -->
     <div class="post-hero" style={img ? `background-image:url(${img})` : `background:${color || '#1a1a2e'}`}>
       <div class="post-hero-inner">
         <h1 class="post-title">{title}</h1>
@@ -60,11 +42,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
       </div>
     </div>
 
-    <!-- 正文 — 带浮动目录锚点 -->
     <div class="post-layout">
-      <!-- 浮动目录（桌面端） -->
       <aside class="post-toc" id="post-toc">
-        <!-- 最近文章 -->
         <div class="toc-recent">
           <div class="toc-title">最近发布</div>
           <div class="toc-recent-list">
@@ -77,13 +56,11 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
         <div class="toc-list" id="toc-list"></div>
       </aside>
 
-      <!-- 内容区 -->
       <div class="post-body" id="post-body">
         <Content />
       </div>
     </div>
 
-    <!-- 上一篇 / 下一篇 -->
     <nav class="post-nav">
       {prevPost ? (
         <a href={'/blog/' + prevPost.slug} class="post-nav-link prev">
@@ -102,7 +79,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
       ) : <span class="post-nav-link next empty" />}
     </nav>
 
-    <!-- 赞赏 / 互动 -->
     <div class="post-appreciate">
       <p class="appreciate-hint">觉得有用的话，给点鼓励吧～</p>
       <div class="appreciate-btns">
@@ -118,7 +94,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
       </div>
     </div>
 
-    <!-- 底部 -->
     <div class="post-end">
       <a href="/blog#blog-content" class="post-return">
         <Icon name="arrow-left" size={14} /> 返回文章列表
@@ -126,7 +101,6 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
     </div>
   </article>
 
-  <!-- 图片灯箱 -->
   <div class="lightbox" id="lightbox">
     <button class="lightbox-close" id="lightbox-close"><Icon name="x" size={18} /></button>
     <img id="lightbox-img" src="" alt="" />
@@ -158,15 +132,16 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
     var toc = document.getElementById('post-toc');
     var list = document.getElementById('toc-list');
     if (!toc || !list) return;
-    var headings = document.querySelectorAll('.post-body h2');
-    if (headings.length < 2) { toc.style.display = 'none'; return; }
+    var headings = document.querySelectorAll('.post-body h1, .post-body h2, .post-body h3');
+    if (headings.length < 1) { list.style.display = 'none'; return; }
 
     headings.forEach(function (h, i) {
       var id = 'section-' + i;
       h.id = id;
+      var level = h.tagName.toLowerCase();
       var a = document.createElement('a');
       a.href = '#' + id;
-      a.className = 'toc-link';
+      a.className = 'toc-link toc-' + level;
       a.textContent = h.textContent;
       a.addEventListener('click', function (e) {
         e.preventDefault();
@@ -444,6 +419,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
     opacity: 1; border-left-color: #0040ff;
     background: rgba(0,64,255,0.05); color: #0040ff; font-weight: 600;
   }
+  :global(.toc-h3) { padding-left: 24px; font-size: 0.8rem; opacity: 0.35; }
 
   /* 正文区 */
   .post-body {
@@ -462,6 +438,11 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
 
   .post-body :global(p:first-of-type) {
     font-size: 1.15rem; opacity: 1; line-height: 2.1; padding-left: 0;
+  }
+
+  .post-body :global(h1) {
+    font-size: 1.8rem; font-weight: 800; margin: 2.8em 0 0.8em;
+    padding-left: 12px; border-left: 3px solid #0040ff; letter-spacing: -0.3px;
   }
 
   .post-body :global(h2) {
@@ -499,6 +480,14 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 400));
   .post-body :global(ul), .post-body :global(ol) {
     margin: 1.5em 0; padding-left: 1.5em; line-height: 1.9;
   }
+
+  .post-body :global(a) { color: #3b82f6; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
+  .post-body :global(a):hover { color: #60a5fa; }
+
+  .post-body :global(table) { border-collapse: collapse; width: 100%; margin: 1.5em 0; font-size: 0.95rem; }
+  .post-body :global(th), .post-body :global(td) { border: 1px solid rgba(128,128,128,0.2); padding: 10px 14px; text-align: left; }
+  .post-body :global(th) { background: rgba(0,64,255,0.06); font-weight: 700; font-size: 0.85rem; }
+  .post-body :global(hr) { border: none; border-top: 1px solid rgba(128,128,128,0.15); margin: 2em 0; }
 
   /* ========================================================================
      4. 上一篇 / 下一篇导航

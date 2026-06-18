@@ -5,18 +5,10 @@ import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
 import HeroTitle from '../components/HeroTitle.astro';
+import aigcData from '../content/aigc.json';
 
-const works = [
-  { src: '/img/bg/0-1.webp', title: '虚空之瞳', model: 'Midjourney', tag: '奇幻' },
-  { src: '/img/bg/0-2.webp', title: '赛博晨光', model: 'Stable Diffusion', tag: '科幻' },
-  { src: '/img/bg/0-3.webp', title: '镜花水月', model: 'DALL·E', tag: '概念' },
-  { src: '/img/bg/0-4.webp', title: '极光之森', model: 'Midjourney', tag: '自然' },
-  { src: '/img/bg/0-5.webp', title: '霓虹暗涌', model: 'Stable Diffusion', tag: '赛博' },
-  { src: '/img/bg/0-6.webp', title: '尘埃纪元', model: 'DALL·E', tag: '末世' },
-  { src: '/img/bg/1.webp',   title: '晨雾山峦', model: 'Midjourney', tag: '写实' },
-  { src: '/img/bg/2.webp',   title: '深海幽光', model: 'Stable Diffusion', tag: '幻想' },
-  { src: '/img/bg/3.webp',   title: '星环遗迹', model: 'DALL·E', tag: '太空' },
-];
+const works = aigcData.works;
+const subtitle = aigcData.subtitle;
 ---
 
 <BaseLayout title="AIGC - 懒得取名">
@@ -24,9 +16,9 @@ const works = [
   <Header />
 
   <main class="page">
-    <HeroTitle title="AIGC" subtitle="算法与美学的交界地带。每一张都是与机器的一场沉默对谈。" />
+    <HeroTitle title="AIGC" subtitle={subtitle} />
 
-    <div class="gallery" aria-label="AI 生成作品集">
+    <div class="gallery" id="aigc-gallery" aria-label="AI 生成作品集">
       {works.map((w, i) => (
         <figure class="card reveal" style={`--i: ${i}`}>
           <div class="card-img">
@@ -42,18 +34,23 @@ const works = [
         </figure>
       ))}
     </div>
+    <nav class="aigc-pager" id="aigc-pager">
+      <button class="aigc-pg-btn" id="aigc-prev" disabled>&#8592;</button>
+      <div id="aigc-pg-nums"></div>
+      <button class="aigc-pg-btn" id="aigc-next">&#8594;</button>
+    </nav>
   </main>
 
   <Footer />
   <FloatingButtons />
 </BaseLayout>
 
-<style>
+<style is:global>
   .page {
     width: 100%;
     min-height: calc(100vh - 76px);
     background: transparent;
-    padding: 0 clamp(20px, 4vw, 48px) 120px;
+    padding: 40px clamp(20px, 4vw, 48px) 120px;
     max-width: 1120px;
     margin: 0 auto;
   }
@@ -150,16 +147,31 @@ const works = [
   /* Reveal */
   .reveal {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.55s cubic-bezier(0.22,0.61,0.36,1),
-                transform 0.55s cubic-bezier(0.22,0.61,0.36,1);
-    transition-delay: calc(var(--i) * 55ms);
+    transform: translateY(28px) scale(0.97);
+    transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
+                transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: calc(var(--i) * 60ms);
   }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+  /* 分页 */
+  .aigc-pager { display:flex; justify-content:center; align-items:center; gap:12px; margin-top:80px; opacity:0; transform:translateY(4vh); transition:opacity 0.7s ease 0.3s,transform 0.7s ease 0.3s; }
+  .aigc-pager.visible { opacity:1; transform:translateY(0); }
+  .aigc-pg-btn { width:38px; height:38px; border-radius:10px; border:none; background:none; color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.78rem; transition:background 0.2s; }
+  .aigc-pg-btn:hover:not(:disabled) { background:rgba(128,128,128,0.08); }
+  .aigc-pg-btn:disabled { opacity:0.2; cursor:default; }
+  .aigc-pg-num { width:40px; height:40px; border-radius:12px; border:1px solid rgba(128,128,128,0.15); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.88rem; font-weight:700; cursor:pointer; transition:all 0.25s ease; letter-spacing:0.5px; }
+  .aigc-pg-num:hover { background:rgba(128,128,128,0.1); border-color:rgba(128,128,128,0.3); }
+  .aigc-pg-num.on { background:#0040ff; color:#fff; border-color:#0040ff; box-shadow:0 2px 12px rgba(0,64,255,0.3); }
 
   @media (max-width: 768px) {
     .card { border-radius: 14px; }
     .card-caption { padding: 14px 16px; }
+    .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .page { padding: 24px 16px 80px; }
+    .aigc-pager { gap:4px; margin-top:60px; }
+    .aigc-pg-btn { width:34px; height:34px; font-size:0.75rem; }
+    .aigc-pg-num { width:34px; height:34px; font-size:0.82rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -174,4 +186,45 @@ const works = [
       es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' }).observe(el);
   });
+
+  (function(){
+    if(window.innerWidth>=769)return;
+    var gallery=document.getElementById('aigc-gallery');
+    var pager=document.getElementById('aigc-pager');
+    if(!gallery||!pager)return;
+    var cards=[].slice.call(gallery.querySelectorAll('.card'));
+    var pp=6,page=1;
+    function render(){
+      var t=Math.ceil(cards.length/pp);
+      var s=(page-1)*pp;
+      cards.forEach(function(c,i){
+        var show=i>=s&&i<s+pp;
+        c.style.display=show?'':'none';
+        if(show){
+          c.classList.remove('visible');
+          c.style.opacity='0';c.style.transform='translateY(24px) scale(0.97)';
+          setTimeout(function(){
+            c.style.transition='opacity 0.5s cubic-bezier(0.16,1,0.3,1),transform 0.5s cubic-bezier(0.16,1,0.3,1)';
+            c.classList.add('visible');c.style.opacity='';c.style.transform='';
+          },(i-s)*60);
+        }
+      });
+      var nums=document.getElementById('aigc-pg-nums');
+      nums.innerHTML='';
+      for(var i=0;i<t;i++){
+        var btn=document.createElement('button');
+        btn.className='aigc-pg-num'+(i===page-1?' on':'');
+        btn.dataset.page=i+1;btn.textContent=i+1;
+        btn.addEventListener('click',function(){page=+this.dataset.page;render();});
+        nums.appendChild(btn);
+      }
+      document.getElementById('aigc-prev').disabled=page===1;
+      document.getElementById('aigc-next').disabled=page===t;
+    }
+    document.getElementById('aigc-prev').addEventListener('click',function(){if(page>1){page--;render();}});
+    document.getElementById('aigc-next').addEventListener('click',function(){page++;render();});
+    pager.style.display='flex';
+    render();
+    setTimeout(function(){pager.classList.add('visible');},100);
+  })();
 </script>

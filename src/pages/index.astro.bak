@@ -80,80 +80,132 @@ const socialLinks = siteData.socialLinks;
     <a class="about-logo" href="/" target="_blank" rel="noopener">
       <img src="/img/laa/long.webp" alt="Logo" />
     </a>
-
-    <!-- Canvas 粒子背景 -->
-    <canvas id="particle-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
-
     <div class="about-inner">
 
-      <!-- Section 1: Hero -->
-      <section class="show-section show-hero">
-        <div class="show-hero-content">
-          <h1 class="show-title" id="show-title">Creative Works</h1>
-          <p class="show-subtitle" id="show-subtitle">Exploring the intersection of art and technology</p>
+      <!-- Marquee 跑马灯 -->
+      <div class="retro-marquee">
+        <div class="marquee-track">
+          <span>CREATIVE DEVELOPER</span>
+          <span>★</span>
+          <span>AI EXPLORER</span>
+          <span>★</span>
+          <span>WEBGL ARTIST</span>
+          <span>★</span>
+          <span>OPEN SOURCE</span>
+          <span>★</span>
+          <span>CREATIVE DEVELOPER</span>
+          <span>★</span>
+          <span>AI EXPLORER</span>
+          <span>★</span>
+          <span>WEBGL ARTIST</span>
+          <span>★</span>
+          <span>OPEN SOURCE</span>
+          <span>★</span>
+        </div>
+      </div>
+
+      <!-- 简介：错位图文 -->
+      <section class="retro-section retro-about">
+        <div class="retro-text anim-slide">
+          <span class="retro-label">01 — WHO</span>
+          <h2 class="retro-heading">代码即诗歌<br/>设计如数学</h2>
+          <p class="retro-body">
+            一个热爱创造的程序员。相信代码可以像诗歌一样优雅，设计可以像数学一样精确。目前在探索 AI 与前端技术的交汇点，用 Three.js 构建沉浸式的 Web 体验。
+          </p>
+        </div>
+        <div class="retro-image stagger-img parallax-img" data-speed="0.1">
+          <img src="/img/bg/3.webp" alt="" loading="lazy" />
         </div>
       </section>
 
-      <!-- Section 2: Gallery -->
-      <section class="show-section show-gallery">
-        <div class="show-gallery-grid">
-          <div class="show-gallery-item gi-1"><img src="/img/bg/0-1.webp" alt="" loading="lazy" /></div>
-          <div class="show-gallery-item gi-2"><img src="/img/bg/0-2.webp" alt="" loading="lazy" /></div>
-          <div class="show-gallery-item gi-3"><img src="/img/bg/0-3.webp" alt="" loading="lazy" /></div>
-          <div class="show-gallery-item gi-4"><img src="/img/bg/0-4.webp" alt="" loading="lazy" /></div>
-          <div class="show-gallery-item gi-5"><img src="/img/bg/0-5.webp" alt="" loading="lazy" /></div>
-          <div class="show-gallery-item gi-6"><img src="/img/bg/0-6.webp" alt="" loading="lazy" /></div>
-        </div>
-      </section>
-
-      <!-- Section 3: Featured -->
-      <section class="show-section show-featured">
-        <div class="show-featured-inner">
-          <div class="show-featured-img"><img src="/img/bg/4.webp" alt="" loading="lazy" /></div>
-          <div class="show-featured-text">
-            <h2 class="show-feat-title">Featured Project</h2>
-            <p class="show-feat-desc">A deep dive into immersive web experiences, blending WebGL shaders with real-time interaction design.</p>
+      <!-- 技术栈：非对称网格 -->
+      <section class="retro-section retro-skills">
+        <span class="retro-label anim-slide">02 — STACK</span>
+        <div class="skills-grid">
+          <div class="skill-card anim-reveal" style="--delay:0s">
+            <span class="skill-num">01</span>
+            <span class="skill-name">TypeScript</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.1s">
+            <span class="skill-num">02</span>
+            <span class="skill-name">React / Next.js</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.2s">
+            <span class="skill-num">03</span>
+            <span class="skill-name">Three.js / WebGL</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.3s">
+            <span class="skill-num">04</span>
+            <span class="skill-name">Node.js</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="skill-card anim-reveal" style="--delay:0.4s">
+            <span class="skill-num">05</span>
+            <span class="skill-name">Python / AI</span>
+            <div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div>
           </div>
         </div>
       </section>
 
-      <!-- Section 4: Process -->
-      <section class="show-section show-process">
-        <h2 class="show-process-title">Process</h2>
-        <div class="show-process-steps">
-          <div class="show-step">
-            <span class="show-step-num">01</span>
-            <h3 class="show-step-name">Concept</h3>
-            <p class="show-step-desc">Research, ideation, and visual direction.</p>
+      <!-- 旅程：电影级滚动叙事 -->
+      <section class="retro-section retro-journey">
+        <div class="retro-text anim-slide">
+          <span class="retro-label">03 — JOURNEY</span>
+          <h2 class="retro-heading">时间线</h2>
+        </div>
+        <div class="journey-timeline">
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2025</span>
+            <div class="journey-content">
+              <h3>独立开发者</h3>
+              <p>探索 AI + 前端交叉领域，构建个人工具链。</p>
+            </div>
           </div>
-          <div class="show-step">
-            <span class="show-step-num">02</span>
-            <h3 class="show-step-name">Design</h3>
-            <p class="show-step-desc">Typography, layout, color, and motion systems.</p>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2024</span>
+            <div class="journey-content">
+              <h3>深入 WebGL</h3>
+              <p>Three.js + GLSL 流体模拟与交互视觉。</p>
+            </div>
           </div>
-          <div class="show-step">
-            <span class="show-step-num">03</span>
-            <h3 class="show-step-name">Build</h3>
-            <p class="show-step-desc">Code, performance, and pixel-perfect execution.</p>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2023</span>
+            <div class="journey-content">
+              <h3>全栈之路</h3>
+              <p>Node.js + 数据库 + SSR 完整闭环。</p>
+            </div>
+          </div>
+          <div class="journey-item anim-slide">
+            <span class="journey-year">2022</span>
+            <div class="journey-content">
+              <h3>前端入门</h3>
+              <p>用 React 写出第一个完整博客。</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Section 5: Stats -->
-      <section class="show-section show-stats">
-        <div class="show-stats-grid">
-          <div class="show-stat">
-            <span class="show-stat-num" data-target="120">0</span>
-            <span class="show-stat-label">Projects</span>
-          </div>
-          <div class="show-stat">
-            <span class="show-stat-num" data-target="50">0</span>
-            <span class="show-stat-label">Clients</span>
-          </div>
-          <div class="show-stat">
-            <span class="show-stat-num" data-target="15">0</span>
-            <span class="show-stat-label">Awards</span>
-          </div>
+      <!-- 大图视差 -->
+      <section class="retro-section retro-visual">
+        <div class="retro-visual-img parallax-img" data-speed="0.2">
+          <img src="/img/bg/4.webp" alt="" loading="lazy" />
+        </div>
+        <div class="retro-visual-overlay anim-reveal">
+          <span class="retro-big-text">CREATE</span>
+        </div>
+      </section>
+
+      <!-- BLUE 文字高度展开 -->
+      <section class="retro-section retro-blue" id="retro-blue">
+        <div class="blue-footer" id="blue-footer">
+          <span class="blue-footer-left">WE CRAFT BOLD DESIGN & CLEAN CODE.</span>
+          <span class="blue-footer-right">TRUE BLUE · 2025</span>
+        </div>
+        <div class="blue-text-wrap" id="blue-text-wrap">
+          <span class="blue-text" id="blue-text">BLUE</span>
         </div>
       </section>
 
@@ -184,170 +236,6 @@ const socialLinks = siteData.socialLinks;
   </button>
 
   <FloatingButtons />
-
-  <!-- GSAP CDN - 动态加载 -->
-  <script is:inline>
-    function loadScript(src) {
-      return new Promise(function(resolve) {
-        var s = document.createElement('script');
-        s.src = src;
-        s.onload = resolve;
-        document.head.appendChild(s);
-      });
-    }
-    window._gsapReady = loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js')
-      .then(function() { return loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js'); });
-  </script>
-
-  <!-- Canvas 粒子背景 -->
-  <script is:inline>
-  (function(){
-    var canvas = document.getElementById('particle-canvas');
-    if(!canvas) return;
-    var ctx = canvas.getContext('2d');
-    var particles = [];
-    var mouseX = 0, mouseY = 0;
-    var W, H;
-
-    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-
-    document.addEventListener('mousemove', function(e){ mouseX = e.clientX; mouseY = e.clientY; });
-
-    for(var i = 0; i < 80; i++){
-      particles.push({
-        x: Math.random() * W, y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5, alpha: Math.random() * 0.4 + 0.1
-      });
-    }
-
-    function draw(){
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(function(p){
-        var dx = mouseX - p.x, dy = mouseY - p.y;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist < 200){
-          p.vx += dx * 0.00003;
-          p.vy += dy * 0.00003;
-        }
-        p.x += p.vx; p.y += p.vy;
-        p.vx *= 0.99; p.vy *= 0.99;
-        if(p.x < 0) p.x = W; if(p.x > W) p.x = 0;
-        if(p.y < 0) p.y = H; if(p.y > H) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,' + p.alpha + ')';
-        ctx.fill();
-      });
-      // 连线
-      for(var i = 0; i < particles.length; i++){
-        for(var j = i + 1; j < particles.length; j++){
-          var dx = particles[i].x - particles[j].x;
-          var dy = particles[i].y - particles[j].y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if(dist < 120){
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(255,255,255,' + (0.08 * (1 - dist / 120)) + ')';
-            ctx.stroke();
-          }
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-    draw();
-  })();
-  </script>
-
-  <!-- GSAP 动画 -->
-  <script is:inline>
-  (function(){
-    function initAnimations(){
-      if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Hero 标题逐字入场
-      var title = document.getElementById('show-title');
-      if(title){
-        var text = title.textContent;
-        title.innerHTML = '';
-        text.split('').forEach(function(ch){
-          var span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = ch === ' ' ? '\u00A0' : ch;
-          title.appendChild(span);
-        });
-        gsap.to('.show-title .char', {
-          y: 0, opacity: 1, duration: 0.6,
-          stagger: 0.04, ease: 'power3.out', delay: 0.3
-        });
-      }
-
-      // Gallery stagger
-      gsap.utils.toArray('.show-gallery-item').forEach(function(item, i){
-        gsap.to(item, {
-          scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none none' },
-          opacity: 1, y: 0, duration: 0.7, delay: i * 0.1, ease: 'power3.out'
-        });
-      });
-
-      // Featured parallax
-      gsap.to('.show-featured-img', {
-        scrollTrigger: { trigger: '.show-featured', start: 'top bottom', end: 'bottom top', scrub: 1 },
-        y: -60
-      });
-      gsap.to('.show-featured-img', {
-        scrollTrigger: { trigger: '.show-featured', start: 'top 80%' },
-        opacity: 1, y: 0, duration: 1, ease: 'power3.out'
-      });
-
-      // Process steps
-      gsap.utils.toArray('.show-step').forEach(function(step, i){
-        gsap.to(step, {
-          scrollTrigger: { trigger: step, start: 'top 85%' },
-          opacity: 1, y: 0, duration: 0.6, delay: i * 0.15, ease: 'power3.out'
-        });
-      });
-
-      // Stats count-up
-      gsap.utils.toArray('.show-stat-num').forEach(function(num){
-        var target = parseInt(num.getAttribute('data-target'));
-        gsap.to(num, {
-          scrollTrigger: { trigger: num, start: 'top 85%' },
-          innerText: target, duration: 2, ease: 'power2.out',
-          snap: { innerText: 1 },
-          onUpdate: function(){ num.textContent = Math.round(parseFloat(num.textContent)) + '+'; }
-        });
-      });
-    }
-
-    // 等待 GSAP 加载完成
-    function waitForGsap() {
-      if(window._gsapReady) {
-        window._gsapReady.then(initAnimations);
-      } else {
-        setTimeout(waitForGsap, 100);
-      }
-    }
-
-    // 展开时初始化动画
-    var aboutPage = document.getElementById('about-page');
-    if(aboutPage){
-      var observer = new MutationObserver(function(mutations){
-        mutations.forEach(function(m){
-          if(m.target.classList.contains('active')){
-            waitForGsap();
-          }
-        });
-      });
-      observer.observe(aboutPage, { attributes: true, attributeFilter: ['class'] });
-    }
-  })();
-  </script>
-
 </BaseLayout>
 
 <script>
@@ -807,172 +695,339 @@ const socialLinks = siteData.socialLinks;
     padding: 0;
   }
 
-  /* === Show Sections === */
-  .show-section {
+  /* --- Hero --- */
+  .retro-hero {
+    position: relative;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    position: relative;
-    z-index: 2;
-    padding: 60px clamp(20px, 6vw, 80px);
+    padding: clamp(40px, 8vh, 80px) clamp(20px, 6vw, 80px);
+    overflow: hidden;
   }
-
-  /* Hero */
-  .show-hero { text-align: center; }
-  .show-title {
+  .retro-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.4;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .retro-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .retro-line {
     font-size: clamp(3rem, 10vw, 8rem);
     font-weight: 900;
-    letter-spacing: -0.04em;
     line-height: 0.95;
+    letter-spacing: -0.04em;
     color: var(--text);
-    margin-bottom: 24px;
-    overflow: hidden;
+    text-transform: uppercase;
   }
-  .show-title .char { display: inline-block; opacity: 0; transform: translateY(100%); }
-  .show-subtitle {
-    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
-    color: var(--text);
+  .retro-line.accent {
+    color: #0040ff;
+    -webkit-text-stroke: 2px #0040ff;
+    -webkit-text-fill-color: transparent;
+  }
+  :global([data-theme="dark"]) .retro-line.accent {
+    color: #4d8aff;
+    -webkit-text-stroke: 2px #4d8aff;
+  }
+  .retro-line.small {
+    font-size: clamp(1.2rem, 3vw, 2.4rem);
     opacity: 0.5;
-    letter-spacing: 2px;
+    margin-top: 12px;
   }
-
-  /* Gallery */
-  .show-gallery { padding: 60px clamp(20px, 4vw, 60px); align-items: flex-start; }
-  .show-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    width: 100%;
-    max-width: 1100px;
-  }
-  .show-gallery-item {
-    border-radius: 12px;
+  .retro-hero-img {
+    position: absolute;
+    right: -5%;
+    bottom: -10%;
+    width: 45%;
+    max-width: 500px;
+    border-radius: 20px;
     overflow: hidden;
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0.2;
+    mask-image: linear-gradient(to top, transparent 0%, black 40%);
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%);
   }
-  .show-gallery-item.visible { opacity: 1; transform: translateY(0); }
-  .show-gallery-item img {
+  .retro-hero-img img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
     display: block;
-    transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  .show-gallery-item:hover img { transform: scale(1.08); }
-  .gi-1 { grid-row: span 2; }
-  .gi-4 { grid-row: span 2; }
 
-  /* Featured */
-  .show-featured { flex-direction: column; gap: 40px; }
-  .show-featured-inner {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 40px;
-    align-items: center;
+  /* --- Marquee --- */
+  .retro-marquee {
     width: 100%;
-    max-width: 1100px;
-  }
-  .show-featured-img {
-    border-radius: 16px;
     overflow: hidden;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 20px 0;
+    border-top: 1px solid rgba(128,128,128,0.15);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
   }
-  .show-featured-img.visible { opacity: 1; transform: translateY(0); }
-  .show-featured-img img { width: 100%; display: block; }
-  .show-feat-title {
-    font-size: clamp(1.8rem, 3vw, 2.8rem);
-    font-weight: 800;
+  .marquee-track {
+    display: flex;
+    gap: 40px;
+    white-space: nowrap;
+    animation: marquee-scroll 20s linear infinite;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
     color: var(--text);
-    margin-bottom: 16px;
+    opacity: 0.3;
   }
-  .show-feat-desc {
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* --- Sections --- */
+  .retro-section {
+    padding: clamp(60px, 10vh, 120px) clamp(20px, 6vw, 80px);
+    position: relative;
+  }
+  .retro-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.3;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .retro-heading {
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .retro-body {
     font-size: 1rem;
     line-height: 1.8;
     color: var(--text);
-    opacity: 0.5;
+    opacity: 0.6;
+    max-width: 560px;
   }
 
-  /* Process */
-  .show-process { flex-direction: column; gap: 60px; text-align: center; }
-  .show-process-title {
-    font-size: clamp(1.5rem, 3vw, 2.4rem);
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.02em;
+  /* --- About: 错位图文 --- */
+  .retro-about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(30px, 5vw, 60px);
+    align-items: center;
   }
-  .show-process-steps {
+  .retro-about .retro-image {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .retro-about .retro-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* --- Skills: 非对称网格 --- */
+  .skills-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    width: 100%;
-    max-width: 900px;
+    gap: 16px;
+    margin-top: 24px;
   }
-  .show-step {
-    text-align: center;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  .skill-card {
+    background: rgba(128,128,128,0.04);
+    border: 1px solid rgba(128,128,128,0.08);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
   }
-  .show-step.visible { opacity: 1; transform: translateY(0); }
-  .show-step-num {
-    font-size: 2.5rem;
+  .skill-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,64,255,0.3);
+  }
+  .skill-card:nth-child(4),
+  .skill-card:nth-child(5) {
+    grid-column: span 1;
+  }
+  .skill-num {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #0040ff;
+    opacity: 0.5;
+    letter-spacing: 2px;
+  }
+  .skill-card .skill-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: 0.8;
+  }
+  .skill-card .skill-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(128,128,128,0.1);
+    margin-top: 8px;
+  }
+  .skill-card .skill-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #0040ff;
+  }
+
+  /* --- Journey --- */
+  .journey-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 32px;
+    border-top: 1px solid rgba(128,128,128,0.12);
+  }
+  .journey-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 24px;
+    padding: 32px 0;
+    border-bottom: 1px solid rgba(128,128,128,0.12);
+    transition: background 0.3s ease;
+  }
+  .journey-item:hover {
+    background: rgba(128,128,128,0.03);
+  }
+  .journey-year {
+    font-size: 2rem;
     font-weight: 900;
     color: #0040ff;
-    opacity: 0.3;
-    display: block;
-    margin-bottom: 16px;
+    opacity: 0.4;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
-  .show-step-name {
+  .journey-content h3 {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
-  .show-step-desc {
+  .journey-content p {
     font-size: 0.85rem;
     color: var(--text);
     opacity: 0.5;
     line-height: 1.6;
   }
 
-  /* Stats */
-  .show-stats { flex-direction: column; }
-  .show-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
+  /* --- Visual: 大图视差 --- */
+  .retro-visual {
+    position: relative;
+    height: 70vh;
+    overflow: hidden;
+  }
+  .retro-visual-img {
+    position: absolute;
+    inset: -20% 0;
+  }
+  .retro-visual-img img {
     width: 100%;
-    max-width: 700px;
+    height: 100%;
+    object-fit: cover;
   }
-  .show-stat { text-align: center; }
-  .show-stat-num {
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
+  .retro-visual-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+  }
+  .retro-big-text {
+    font-size: clamp(4rem, 12vw, 10rem);
     font-weight: 900;
-    color: var(--text);
-    display: block;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .show-stat-label {
-    font-size: 0.8rem;
-    color: var(--text);
-    opacity: 0.4;
-    letter-spacing: 2px;
+    color: white;
+    letter-spacing: -0.04em;
     text-transform: uppercase;
   }
 
-  /* Responsive */
+  /* --- BLUE 文字高度展开 --- */
+  .retro-blue {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+    overflow: hidden;
+  }
+  .blue-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px clamp(20px, 4vw, 48px);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.5;
+    will-change: transform, opacity;
+    flex-shrink: 0;
+  }
+  .blue-text-wrap {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    will-change: height;
+  }
+  .blue-text {
+    display: block;
+    text-align: center;
+    font-size: clamp(10rem, 28vw, 24rem);
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* --- 动画 --- */
+  .anim-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .anim-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .anim-slide {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .anim-slide.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --- 响应式 --- */
   @media (max-width: 768px) {
-    .show-gallery-grid { grid-template-columns: 1fr 1fr; }
-    .gi-1, .gi-4 { grid-row: span 1; }
-    .show-featured-inner { grid-template-columns: 1fr; }
-    .show-process-steps { grid-template-columns: 1fr; gap: 32px; }
-    .show-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .retro-about {
+      grid-template-columns: 1fr;
+    }
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+    .journey-item {
+      grid-template-columns: 80px 1fr;
+    }
+    .retro-hero-img {
+      width: 60%;
+      opacity: 0.12;
+    }
   }
 
   /* === 卡片分裂动效 — 真实裂开 === */

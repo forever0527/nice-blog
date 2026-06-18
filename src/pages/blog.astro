@@ -5,13 +5,8 @@ import Footer from '../components/Footer.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
 import Icon from '../components/Icon.astro';
-import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('blog');
-const posts = allPosts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
-const allTags = [...new Set(posts.map(p => p.data.tag))];
 const ITEMS_PER_PAGE = 12;
-const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
 ---
 
 <BaseLayout title="Blog - 懒得取名">
@@ -51,17 +46,13 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     <div class="blg-bar">
       <div class="blg-tags" id="blg-tags">
         <button class="blg-chip on" data-tag="全部">全部</button>
-        {allTags.slice(0, 4).map(tag => (
-          <button class="blg-chip" data-tag={tag}>{tag}</button>
-        ))}
-        {allTags.length > 4 && <span class="blg-tags-more" id="blg-tags-more">+{allTags.length - 4}</span>}
       </div>
       <div class="blg-search-group">
         <div class="blg-search">
           <span class="blg-search-icon"><Icon name="search" size={13} /></span>
           <input type="text" class="blg-search-input" id="blg-search" placeholder="搜索文章..." />
         </div>
-        <span class="blg-num" id="blg-num">{posts.length} 篇</span>
+        <span class="blg-num" id="blg-num">加载中...</span>
       </div>
     </div>
 
@@ -81,27 +72,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     </div>
 
     <!-- 双列卡片 -->
-    <div class="blg-grid" id="blg-grid">
-      {posts.map((post, index) => {
-        const { title, desc, date, tag, color, img } = post.data;
-        const page = Math.floor(index / ITEMS_PER_PAGE) + 1;
-        return (
-          <article class="blg-card" data-tag={tag} data-page={page}>
-            <a href={'/blog/' + post.slug} class="blg-link">
-              <div class="blg-img">
-                <img src={img || '/img/bg/1.webp'} alt={title} loading="lazy" />
-              </div>
-              <div class="blg-overlay">
-                <span class="blg-tag" style={`background:${color||'#0040ff'}`}>{tag}</span>
-                <h2 class="blg-title">{title}</h2>
-                <p class="blg-desc">{desc}</p>
-                <time class="blg-date">{date}</time>
-              </div>
-            </a>
-          </article>
-        );
-      })}
-    </div>
+    <div class="blg-grid" id="blg-grid"></div>
 
     <!-- 空状态 -->
     <div class="blg-empty" id="blg-empty" style="display:none">
@@ -126,18 +97,6 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     <!-- 右侧竖列：随机视频 + 最近文章 + 有趣卡片 -->
     <aside class="blg-sidebar" id="blg-sidebar">
       <div class="blg-sidebar-inner">
-        <!-- 标签 -->
-        <div class="blg-sidebar-section">
-          <div class="blg-sidebar-title-row">
-            <h3 class="blg-sidebar-title">标签</h3>
-          </div>
-          <div class="blg-sidebar-tags">
-            {allTags.map(tag => (
-              <button class="blg-sidebar-tag-btn" data-tag={tag}>{tag}</button>
-            ))}
-          </div>
-        </div>
-
         <!-- 随机视频 -->
         <div class="blg-sidebar-section">
           <div class="blg-sidebar-title-row">
@@ -154,14 +113,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
         <!-- 最近发布 -->
         <div class="blg-sidebar-section">
           <h3 class="blg-sidebar-title">最近发布</h3>
-          <div class="blg-sidebar-list">
-            {posts.slice(0, 6).map(p => (
-              <a href={'/blog/' + p.slug} class="blg-sidebar-link">
-                <span class="blg-sidebar-tag" style={`background:${p.data.color||'#0040ff'}`}>{p.data.tag}</span>
-                <span class="blg-sidebar-text">{p.data.title}</span>
-              </a>
-            ))}
-          </div>
+          <div class="blg-sidebar-list" id="blg-recent-list"></div>
         </div>
 
         <!-- 有趣卡片 -->
@@ -183,30 +135,208 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h12v2H4zm0 5h8v2H4z"/></svg>
   </button>
 
+    <!-- 标签弹窗 -->
+    <div class="tag-modal" id="tag-modal">
+      <div class="tag-modal-mask" id="tag-modal-mask"></div>
+      <div class="tag-modal-card">
+        <div class="tag-modal-header">
+          <span class="tag-modal-title">全部标签</span>
+          <button class="tag-modal-close" id="tag-modal-close">&times;</button>
+        </div>
+        <div class="tag-modal-body" id="tag-modal-tags"></div>
+      </div>
+    </div>
+
   <Footer />
   <FloatingButtons />
 </BaseLayout>
 
-<script define:vars={{ ITEMS_PER_PAGE, totalPages }}>
+<script define:vars={{ ITEMS_PER_PAGE }}>
   (function(){
     var isMobile = window.innerWidth < 769;
-    var pp = isMobile ? 5 : ITEMS_PER_PAGE;
-    var tp = Math.ceil(document.querySelectorAll('.blg-card').length / pp);
-    var cards=[].slice.call(document.querySelectorAll('.blg-card'));
-    var tag='全部',query='',page=1,list=cards;
+    var pp = isMobile ? 6 : ITEMS_PER_PAGE;
+    var tag='全部',query='',page=1,list=[];
+    var allPosts=[];
 
-    // 动态生成分页按钮
-    var pgNums=document.getElementById('blg-pg-nums');
-    var pgPager=document.getElementById('blg-pager');
-    if(tp<=1&&pgPager){pgPager.style.display='none';}
-    else if(pgNums){
-      for(var i=0;i<tp;i++){
+    // 从 API 获取文章
+    fetch('/api/articles')
+      .then(function(r){return r.json()})
+      .then(function(data){
+        allPosts=data.filter(function(p){return !p.draft}).sort(function(a,b){return new Date(b.date)-new Date(a.date)});
+        renderTags();
+        renderCards();
+        renderRecent();
+      })
+      .catch(function(){});
+
+    function renderTags(){
+      var tags=[...new Set(allPosts.map(function(p){return p.tag}))];
+
+      function syncTagUI(t){
+        var container=document.getElementById('blg-tags');
+        container.querySelectorAll('.blg-chip').forEach(function(x){x.classList.remove('on')});
+        var match=container.querySelector('.blg-chip[data-tag="'+t+'"]');
+        if(match)match.classList.add('on');
+      }
+
+      // 顶部标签栏
+      var container=document.getElementById('blg-tags');
+      container.innerHTML='';
+      var allBtn=document.createElement('button');
+      allBtn.className='blg-chip on';allBtn.dataset.tag='全部';allBtn.textContent='全部';
+      allBtn.addEventListener('click',function(){
+        tag='全部';syncTagUI('全部');
+        applyFilters();render(true);
+      });
+      container.appendChild(allBtn);
+      var isMobile=window.innerWidth<769;
+      var showCount=isMobile?6:7;
+      tags.slice(0,showCount).forEach(function(t){
         var btn=document.createElement('button');
-        btn.className='blg-pg-num'+(i===0?' on':'');
-        btn.dataset.page=i+1;
-        btn.textContent=i+1;
-        btn.addEventListener('click',function(){page=+this.dataset.page;render(true)});
-        pgNums.appendChild(btn);
+        btn.className='blg-chip';btn.dataset.tag=t;btn.textContent=t;
+        btn.addEventListener('click',function(){
+          tag=t;syncTagUI(t);
+          applyFilters();render(true);
+        });
+        container.appendChild(btn);
+      });
+      if(isMobile&&tags.length>6){
+        var more=document.createElement('span');
+        more.className='blg-tags-more';more.textContent='更多';
+        more.addEventListener('click',function(){
+          var modal=document.getElementById('tag-modal');
+          var modalTags=document.getElementById('tag-modal-tags');
+          modalTags.innerHTML='';
+          var allBtn2=document.createElement('button');
+          allBtn2.className='blg-chip'+(tag==='全部'?' on':'');allBtn2.dataset.tag='全部';allBtn2.textContent='全部';
+          allBtn2.addEventListener('click',function(){
+            tag='全部';syncTagUI('全部');applyFilters();render(true);
+            closeModal();
+          });
+          modalTags.appendChild(allBtn2);
+          tags.forEach(function(t){
+            var btn=document.createElement('button');
+            btn.className='blg-chip'+(tag===t?' on':'');btn.dataset.tag=t;btn.textContent=t;
+            btn.addEventListener('click',function(){
+              tag=t;syncTagUI(t);applyFilters();render(true);
+              closeModal();
+            });
+            modalTags.appendChild(btn);
+          });
+          modal.classList.add('open');
+          requestAnimationFrame(function(){document.body.style.overflow='hidden';});
+        });
+        container.appendChild(more);
+      }else if(!isMobile&&tags.length>4){
+        var more2=document.createElement('span');
+        more2.className='blg-tags-more';more2.textContent='更多';
+        more2.addEventListener('click',function(){
+          var modal=document.getElementById('tag-modal');
+          var modalTags=document.getElementById('tag-modal-tags');
+          modalTags.innerHTML='';
+          var allBtn2=document.createElement('button');
+          allBtn2.className='blg-chip'+(tag==='全部'?' on':'');allBtn2.dataset.tag='全部';allBtn2.textContent='全部';
+          allBtn2.addEventListener('click',function(){
+            tag='全部';syncTagUI('全部');applyFilters();render(true);
+            closeModal();
+          });
+          modalTags.appendChild(allBtn2);
+          tags.forEach(function(t){
+            var btn=document.createElement('button');
+            btn.className='blg-chip'+(tag===t?' on':'');btn.dataset.tag=t;btn.textContent=t;
+            btn.addEventListener('click',function(){
+              tag=t;syncTagUI(t);applyFilters();render(true);
+              closeModal();
+            });
+            modalTags.appendChild(btn);
+          });
+          modal.classList.add('open');
+          requestAnimationFrame(function(){document.body.style.overflow='hidden';});
+        });
+        container.appendChild(more2);
+      }
+    }
+
+    // 标签弹窗关闭
+    var tagModal=document.getElementById('tag-modal');
+    var tagModalMask=document.getElementById('tag-modal-mask');
+    var tagModalClose=document.getElementById('tag-modal-close');
+    function closeModal(){tagModal.classList.remove('open');document.body.style.overflow='';}
+    if(tagModalMask)tagModalMask.addEventListener('click',closeModal);
+    if(tagModalClose)tagModalClose.addEventListener('click',closeModal);
+
+    function renderCards(){
+      var grid=document.getElementById('blg-grid');
+      grid.innerHTML='';
+      allPosts.forEach(function(post,i){
+        var page=Math.floor(i/pp)+1;
+        var article=document.createElement('article');
+        article.className='blg-card';article.dataset.tag=post.tag;article.dataset.page=page;
+        article.innerHTML='<a href="/blog/'+post.slug+'" class="blg-link"><div class="blg-img"><img src="'+(post.img||'/img/bg/1.webp')+'" alt="'+post.title+'" loading="lazy" /></div><div class="blg-overlay"><span class="blg-tag" style="background:'+(post.color||'#0040ff')+'">'+post.tag+'</span><h2 class="blg-title">'+post.title+'</h2><p class="blg-desc">'+post.desc+'</p><time class="blg-date">'+post.date+'</time></div></a>';
+        grid.appendChild(article);
+      });
+      list=[].slice.call(grid.querySelectorAll('.blg-card'));
+      document.getElementById('blg-num').textContent=allPosts.length+' 篇';
+      setupPager();
+      applyFilters();
+      // 立即显示 grid 和 pager（不依赖 IntersectionObserver）
+      grid.classList.add('visible');
+      var pg=document.getElementById('blg-pager');
+      if(pg)pg.classList.add('visible');
+      // 触发卡片 stagger 入场动画
+      var newCards=grid.querySelectorAll('.blg-card');
+      newCards.forEach(function(c,i){c.style.setProperty('--d',(i%6)*0.06+'s');});
+      var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        });
+      },{threshold:0.05,rootMargin:'0px 0px -20px 0px'});
+      newCards.forEach(function(c){obs.observe(c)});
+      // 隐藏骨架屏
+      var sk=document.getElementById('blg-skeleton');
+      if(sk){sk.style.opacity='0';sk.style.transition='opacity 0.3s ease';setTimeout(function(){sk.style.display='none'},300);}
+      // 光追随效果
+      grid.querySelectorAll('.blg-card').forEach(function(card){
+        var overlay=card.querySelector('.blg-overlay');
+        if(!overlay)return;
+        card.addEventListener('mousemove',function(e){
+          var rect=overlay.getBoundingClientRect();
+          overlay.style.setProperty('--mx',(e.clientX-rect.left)+'px');
+          overlay.style.setProperty('--my',(e.clientY-rect.top)+'px');
+        });
+      });
+    }
+
+    function renderRecent(){
+      var container=document.getElementById('blg-recent-list');
+      if(!container)return;
+      container.innerHTML='';
+      allPosts.slice(0,6).forEach(function(p){
+        var a=document.createElement('a');
+        a.href='/blog/'+p.slug;a.className='blg-sidebar-link';
+        a.innerHTML='<span class="blg-sidebar-tag" style="background:'+(p.color||'#0040ff')+'">'+p.tag+'</span><span class="blg-sidebar-text">'+p.title+'</span>';
+        container.appendChild(a);
+      });
+    }
+
+    function setupPager(){
+      var tp=Math.ceil(list.length/pp)||1;
+      var pgNums=document.getElementById('blg-pg-nums');
+      var pgPager=document.getElementById('blg-pager');
+      pgNums.innerHTML='';
+      if(tp<=1&&pgPager){pgPager.style.display='none';}
+      else if(pgNums){
+        pgPager.style.display='';
+        for(var i=0;i<tp;i++){
+          var btn=document.createElement('button');
+          btn.className='blg-pg-num'+(i===page-1?' on':'');
+          btn.dataset.page=i+1;btn.textContent=i+1;
+          btn.addEventListener('click',function(){page=+this.dataset.page;render(true)});
+          pgNums.appendChild(btn);
+        }
       }
     }
 
@@ -222,7 +352,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     });
 
     function applyFilters(){
-      list=cards.filter(function(c){
+      list=[].slice.call(document.querySelectorAll('.blg-card')).filter(function(c){
         var matchTag=tag==='全部'||c.dataset.tag===tag;
         var matchSearch=!query||(c.textContent||'').toLowerCase().indexOf(query)>-1;
         return matchTag&&matchSearch;
@@ -232,40 +362,17 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
       page=1;render(false);
     }
 
-    document.querySelectorAll('.blg-chip').forEach(function(c){c.addEventListener('click',function(){
-      tag=this.dataset.tag;document.querySelectorAll('.blg-chip').forEach(function(x){x.classList.remove('on')});this.classList.add('on');
-      applyFilters();render(true);
-    })});
-
-    // 侧边栏标签点击同步
-    document.querySelectorAll('.blg-sidebar-tag-btn').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        tag=this.dataset.tag;
-        document.querySelectorAll('.blg-chip').forEach(function(x){x.classList.remove('on')});
-        document.querySelector('.blg-chip[data-tag="'+tag+'"]').classList.add('on');
-        document.querySelectorAll('.blg-sidebar-tag-btn').forEach(function(x){x.classList.remove('active')});
-        this.classList.add('active');
-        applyFilters();render(true);
-      });
-    });
-
     function render(doScroll){
       var t=Math.ceil(list.length/pp)||1,s=(page-1)*pp,e=s+pp;
-      // 淡出所有卡片
-      cards.forEach(function(c){
-        c.style.opacity='0';
-        c.style.transform='translateY(10px) scale(0.98)';
-        c.style.display='none';
+      var allCards=[].slice.call(document.querySelectorAll('.blg-card'));
+      allCards.forEach(function(c){
+        c.style.opacity='0';c.style.transform='translateY(10px) scale(0.98)';c.style.display='none';
       });
-      // 延迟后淡入匹配的卡片
       var visible=list.slice(s,e);
       setTimeout(function(){
         visible.forEach(function(c,i){
           c.style.display='';
-          setTimeout(function(){
-            c.style.opacity='1';
-            c.style.transform='translateY(0) scale(1)';
-          },i*60);
+          setTimeout(function(){c.style.opacity='1';c.style.transform='translateY(0) scale(1)';},i*60);
         });
       },50);
       document.querySelectorAll('.blg-pg-num').forEach(function(n){n.classList.toggle('on',+n.dataset.page===page)});
@@ -283,12 +390,10 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     });
 
     document.getElementById('blg-prev').addEventListener('click',function(){if(page>1){page--;render(true)}});
-    document.getElementById('blg-next').addEventListener('click',function(){if(page<tp){page++;render(true)}});
-    render(false);
+    document.getElementById('blg-next').addEventListener('click',function(){page++;render(true)});
 
-    // 滚动渐显 — 功能栏、卡片、分页先后淡入
-    // rootMargin 负值使元素需进入视口更深才触发，确保波浪隔开足够距离
-    var revealEls = document.querySelectorAll('.blg-bar,.blg-grid,.blg-pager');
+    // 滚动渐显（仅 blg-bar，grid 和 pager 在 renderCards 中直接显示）
+    var revealEls = document.querySelectorAll('.blg-bar');
     var revealObs = new IntersectionObserver(function(entries){
       entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
     },{threshold:0.08,rootMargin:'-40px 0px 0px 0px'});
@@ -309,14 +414,12 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
         ? '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
         : '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h12v2H4zm0 5h8v2H4z"/></svg>';
       toggleBtn.setAttribute('aria-label', isOpen ? '收起侧边栏' : '展开侧边栏');
-      // 关闭侧边栏时暂停视频
       if (!isOpen) {
         var video = document.getElementById('sidebar-video-player');
         if (video) video.pause();
       }
     });
 
-    // 滚动显示/隐藏按钮（和回到顶部按钮同步）
     window.addEventListener('scroll', function () {
       if (window.scrollY > 300) {
         toggleBtn.classList.add('show');
@@ -334,7 +437,6 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     if (!videoEl || !refreshBtn) return;
 
     function loadVideo(autoPlay) {
-      // 加时间戳破坏缓存，确保每次获取不同视频
       var url = VIDEO_API + '&t=' + Date.now();
       fetch(url)
         .then(function(res) { return res.json(); })
@@ -353,7 +455,6 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
       loadVideo(true);
     });
 
-    // 播放结束自动下一个
     videoEl.addEventListener('ended', function() {
       loadVideo(true);
     });
@@ -383,7 +484,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
 
 </script>
 
-<style>
+<style is:global>
   /* === 固定视频背景 === */
   .blog-hero-fixed {
     position: fixed;
@@ -526,7 +627,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   }
 
   /* === 卡片入场波浪效果 === */
-  .blg-card { opacity:0; transform:translateY(30px) scale(0.98); transition:opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1); position:relative; overflow:visible; }
+  .blg-card { opacity:0; transform:translateY(30px) scale(0.97); transition:opacity 0.65s cubic-bezier(0.16,1,0.3,1) var(--d,0s), transform 0.65s cubic-bezier(0.16,1,0.3,1) var(--d,0s); position:relative; overflow:visible; }
   .blg-card.visible { opacity:1; transform:translateY(0) scale(1); }
 
   /* 卡片阴影 */
@@ -564,7 +665,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     transform: translate(-50%, -50%);
     z-index: 0;
   }
-  :global([data-theme="dark"]) .blg-overlay::after {
+  [data-theme="dark"] .blg-overlay::after {
     background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
   }
   .blg-card:hover .blg-overlay::after {
@@ -623,7 +724,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .blg {
     max-width: 1060px;
     margin: 0 auto;
-    padding: 80px 22px 60px;
+    padding: 80px 22px 120px;
     position: relative;
     z-index: 2;
     background: transparent;
@@ -658,7 +759,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .blg-sidebar-inner { display:flex; flex-direction:column; gap:24px; padding-top:70px; padding-bottom:20px; }
   .blg-sidebar-section {
     background:transparent; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-    border:1px solid rgba(120,120,120,0.5); border-radius:16px; padding:18px 16px;
+    border:1px solid rgba(120,120,120,0.5); border-radius:18px; padding:18px 16px;
     box-shadow: 5px 5px 14px var(--nav-edge), 2px 2px 5px var(--nav-edge);
     opacity:0; transform:translateX(20px);
     transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.32,1,0.32,1);
@@ -669,36 +770,36 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .blg-sidebar.open .blg-sidebar-section:nth-child(3) { transition-delay:0.15s; }
   .blg-sidebar.open .blg-sidebar-section:nth-child(4) { transition-delay:0.2s; }
   .blg-sidebar-section:hover { transform:none; }
-  :global([data-theme="dark"]) .blg-sidebar-section {
-    background:rgba(30,41,59,0.5); border-color:rgba(255,255,255,0.06);
+  [data-theme="dark"] .blg-sidebar-section {
+    background:transparent; border-color:rgba(80,90,110,0.4);
   }
   .blg-sidebar-title { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; opacity:0.35; margin-bottom:12px; }
   .blg-sidebar-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
   .blg-sidebar-title-row .blg-sidebar-title { margin-bottom:0; }
   .blg-sidebar-tags { display:flex; flex-wrap:wrap; gap:6px; }
-  :global(.blg-sidebar-tag-btn) {
+  .blg-sidebar-tag-btn {
     padding:4px 10px; border-radius:12px; border:1px solid rgba(120,120,120,0.3);
     background:transparent; color:var(--text); font-size:0.72rem; cursor:pointer;
     transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
-  :global(.blg-sidebar-tag-btn:hover) { background:rgba(128,128,128,0.1); }
-  :global(.blg-sidebar-tag-btn.active) { background:#0040ff; color:#fff; border-color:#0040ff; }
+  .blg-sidebar-tag-btn:hover { background:rgba(128,128,128,0.1); }
+  .blg-sidebar-tag-btn.active { background:#0040ff; color:#fff; border-color:#0040ff; }
   .blg-tags-more {
     font-size:0.75rem; color:var(--text); opacity:0.5; cursor:pointer;
     padding:4px 8px; border-radius:12px;
   }
   .blg-tags-more:hover { opacity:0.8; }
   .blg-sidebar-list { display:flex; flex-direction:column; gap:2px; }
-  :global(.blg-sidebar-link) {
+  .blg-sidebar-link {
     display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px;
     text-decoration:none; color:var(--text); transition:background 0.2s;
   }
-  :global(.blg-sidebar-link):hover { background:rgba(128,128,128,0.06); }
-  :global(.blg-sidebar-tag) {
+  .blg-sidebar-link:hover { background:rgba(128,128,128,0.06); }
+  .blg-sidebar-tag {
     display:inline-block; padding:2px 6px; border-radius:4px; color:#fff;
     font-size:0.58rem; font-weight:700; flex-shrink:0;
   }
-  :global(.blg-sidebar-text) {
+  .blg-sidebar-text {
     font-size:0.78rem; opacity:0.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
 
@@ -710,7 +811,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
 
   /* 随机视频 */
   .sidebar-video { position:relative; border-radius:18px; overflow:hidden; background:#000; box-shadow: 5px 5px 14px var(--nav-edge), 2px 2px 4px var(--nav-edge); }
-  :global([data-theme="dark"]) .sidebar-video {
+  [data-theme="dark"] .sidebar-video {
     background:#111;
   }
   .sidebar-video-player {
@@ -726,7 +827,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .sidebar-video-refresh:hover { background:rgba(128,128,128,0.2); transform:rotate(180deg); }
 
   /* 竖列展开按钮 */
-  :global(.blg-sidebar-toggle) {
+  .blg-sidebar-toggle {
     position:fixed; right:30px; bottom:80px; width:42px; height:42px;
     border:1px solid rgba(255,255,255,0.22); border-radius:50%;
     background:rgba(255,255,255,0.15); backdrop-filter:blur(10px) saturate(140%);
@@ -737,16 +838,16 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     opacity:0; visibility:hidden; transform:translateY(20px);
     transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   }
-  :global([data-theme="dark"]) .blg-sidebar-toggle {
+  [data-theme="dark"] .blg-sidebar-toggle {
     background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.1);
     box-shadow:0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(0,64,255,0.05);
   }
-  :global(.blg-sidebar-toggle.show) { opacity:1; visibility:visible; transform:translateY(0); }
-  :global(.blg-sidebar-toggle):hover {
+  .blg-sidebar-toggle.show { opacity:1; visibility:visible; transform:translateY(0); }
+  .blg-sidebar-toggle:hover {
     border-color:rgba(0,64,255,0.35); box-shadow:0 8px 24px rgba(0,0,0,0.15), 0 0 30px rgba(0,64,255,0.08);
   }
   @media (min-width:768px) {
-    :global(.blg-sidebar-toggle) { right:3vw; bottom:86px; }
+    .blg-sidebar-toggle { right:3vw; bottom:86px; }
   }
 
   /* === 功能栏 === */
@@ -766,7 +867,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     box-shadow:0 2px 10px rgba(0,0,0,0.04);
     color:var(--text); font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.25s;
   }
-  :global([data-theme="dark"]) .blg-chip { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.1); box-shadow:none; }
+  [data-theme="dark"] .blg-chip { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.1); box-shadow:none; }
   .blg-chip:hover { border-color:#0040ff; color:#0040ff; box-shadow:0 4px 16px rgba(0,64,255,0.12); }
   .blg-chip.on { background:#0040ff; border-color:#0040ff; color:#fff; box-shadow:0 4px 16px rgba(0,64,255,0.25); }
 
@@ -783,8 +884,8 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .blg-search-input::-webkit-search-decoration { display:none; }
   .blg-search-input::placeholder { color:var(--text); opacity:0.3; }
   .blg-search-input:focus { border-color:#0040ff; width:200px; box-shadow:none; }
-  :global([data-theme="dark"]) .blg-search-input { background:rgba(255,255,255,0.04); color:#fff; }
-  :global([data-theme="dark"]) .blg-search-input::placeholder { color:#fff; }
+  [data-theme="dark"] .blg-search-input { background:rgba(255,255,255,0.04); color:#fff; }
+  [data-theme="dark"] .blg-search-input::placeholder { color:#fff; }
 
   .blg-num { font-size:0.82rem; opacity:0.4; flex-shrink:0; transition:transform 0.3s ease, opacity 0.3s ease; }
   .blg-num.animate-count { animation: countBounce 0.4s ease; }
@@ -811,7 +912,7 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     box-shadow: 5px 5px 14px var(--nav-edge), 2px 2px 5px var(--nav-edge);
     transition:transform 0.35s ease;
   }
-  :global([data-theme="dark"]) .blg-link {
+  [data-theme="dark"] .blg-link {
     background:transparent; border-color:rgba(80,90,110,0.4);
   }
 
@@ -866,9 +967,9 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .blg-pg-btn { width:38px; height:38px; border-radius:10px; border:none; background:none; color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.78rem; transition:background 0.2s; }
   .blg-pg-btn:hover:not(:disabled) { background:rgba(128,128,128,0.08); }
   .blg-pg-btn:disabled { opacity:0.2; cursor:default; }
-  :global(.blg-pg-num) { width:40px; height:40px; border-radius:12px; border:1px solid rgba(128,128,128,0.15); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.88rem; font-weight:700; cursor:pointer; transition:all 0.25s ease; letter-spacing:0.5px; }
-  :global(.blg-pg-num:hover) { background:rgba(128,128,128,0.1); border-color:rgba(128,128,128,0.3); }
-  :global(.blg-pg-num.on) { background:#0040ff; color:#fff; border-color:#0040ff; box-shadow:0 2px 12px rgba(0,64,255,0.3); }
+  .blg-pg-num { width:40px; height:40px; border-radius:12px; border:1px solid rgba(128,128,128,0.15); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.88rem; font-weight:700; cursor:pointer; transition:all 0.25s ease; letter-spacing:0.5px; }
+  .blg-pg-num:hover { background:rgba(128,128,128,0.1); border-color:rgba(128,128,128,0.3); }
+  .blg-pg-num.on { background:#0040ff; color:#fff; border-color:#0040ff; box-shadow:0 2px 12px rgba(0,64,255,0.3); }
 
   /* === 空状态 === */
   .blg-empty { display:none; flex-direction:column; align-items:center; padding:60px 20px; text-align:center; }
@@ -883,6 +984,37 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   .empty-text { font-size:1.1rem; font-weight:700; opacity:0.5; margin-bottom:6px; color:var(--text); }
   .empty-hint { font-size:0.82rem; opacity:0.3; color:var(--text); }
 
+  /* === 标签弹窗 === */
+  .tag-modal { display:none; position:fixed; inset:0; z-index:9999; }
+  .tag-modal.open { display:flex; align-items:flex-start; justify-content:center; padding-top:80px; }
+  .tag-modal-mask { position:absolute; inset:0; background:rgba(0,0,0,0); backdrop-filter:blur(0px); -webkit-backdrop-filter:blur(0px); transition:background 0.4s cubic-bezier(0.16,1,0.3,1), backdrop-filter 0.4s ease; pointer-events:none; }
+  .tag-modal.open .tag-modal-mask { background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); pointer-events:auto; }
+  .tag-modal-card { position:relative; width:100%; max-width:480px; max-height:70vh; background:rgba(128,128,128,0.06); backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%); border:1px solid rgba(120,120,120,0.3); border-radius:18px; padding:20px 20px 28px; overflow-y:auto; z-index:1; opacity:0; transform:translateY(-20px) scale(0.96); transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .tag-modal.open .tag-modal-card { opacity:1; transform:translateY(0) scale(1); }
+  :global([data-theme="dark"]) .tag-modal-card { background:rgba(255,255,255,0.06); border-color:rgba(80,90,110,0.4); }
+  .tag-modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .tag-modal-title { font-size:1rem; font-weight:700; color:#fff; }
+  .tag-modal-close { width:32px; height:32px; border-radius:50%; border:none; background:rgba(255,255,255,0.15); color:#fff; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s, transform 0.2s; }
+  .tag-modal-close:hover { background:rgba(255,255,255,0.25); transform:rotate(90deg); }
+  .tag-modal-body { display:flex; flex-wrap:wrap; gap:8px; }
+  .tag-modal-body .blg-chip { opacity:0; transform:translateY(10px); transition:opacity 0.3s ease, transform 0.3s ease; }
+  .tag-modal.open .tag-modal-body .blg-chip { opacity:1; transform:translateY(0); }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(1) { transition-delay:0.08s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(2) { transition-delay:0.1s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(3) { transition-delay:0.12s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(4) { transition-delay:0.14s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(5) { transition-delay:0.16s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(6) { transition-delay:0.18s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(7) { transition-delay:0.2s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(8) { transition-delay:0.22s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(9) { transition-delay:0.24s; }
+  .tag-modal.open .tag-modal-body .blg-chip:nth-child(10) { transition-delay:0.26s; }
+  @media (max-width:680px) {
+    .tag-modal.open { align-items:flex-end; padding-top:0; }
+    .tag-modal-card { border-radius:20px 20px 0 0; max-height:60vh; transform:translateY(100%) scale(1); }
+    .tag-modal.open .tag-modal-card { transform:translateY(0) scale(1); }
+  }
+
   /* === 移动端优化 === */
   @media (max-width:680px) {
     .blog-hero-section { height: 100vh; min-height: 100dvh; }
@@ -893,10 +1025,10 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     .hero-sub { font-size: 0.8rem; letter-spacing: 2px; }
     .hero-scroll-hint { bottom: 20px; }
 
-    .blg { padding: 10vh 16px 48px; border-radius: 20px 20px 0 0; }
+    .blg { padding: 10vh 16px 80px; border-radius: 20px 20px 0 0; }
     .blg-layout { display:block; }
     .blg-sidebar { display:none; }
-    :global(.blg-sidebar-toggle) { display:none !important; }
+    .blg-sidebar-toggle { display:none !important; }
     .blg-grid { grid-template-columns:1fr; gap:16px; }
     .blg-img { height:160px; }
     .blg-overlay { padding:16px 18px 20px; }
@@ -908,6 +1040,8 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     .blg-search-input:focus { width:100%; }
     .blg-chip { padding:7px 14px; font-size:0.78rem; }
     .blg-tags { justify-content:center; }
+    .blg-tags-more { padding:7px 14px; border-radius:22px; border:1px solid rgba(128,128,128,0.18); background:transparent; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:var(--text); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.25s; }
+    .blg-tags-more:hover { border-color:#0040ff; color:#0040ff; box-shadow:0 4px 16px rgba(64,255,0,0.12); }
     .blg-pager { gap:4px; }
     .blg-pg-btn { width:34px; height:34px; font-size:0.75rem; }
   }
@@ -917,52 +1051,12 @@ const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
     .hero-cursive { font-size: clamp(2.5rem, 6vw, 5rem); }
     .blg-layout { display:block; }
     .blg-sidebar { display:none; }
-    :global(.blg-sidebar-toggle) { display:none !important; }
+    .blg-sidebar-toggle { display:none !important; }
     .blg-grid { grid-template-columns: repeat(2, 1fr); gap:20px; }
   }
 </style>
 
 <script>
-  // 卡片光追随效果 — 仅在文字区域
-  (function() {
-    var cards = document.querySelectorAll('.blg-card');
-    cards.forEach(function(card) {
-      var overlay = card.querySelector('.blg-overlay');
-      if (!overlay) return;
-      card.addEventListener('mousemove', function(e) {
-        var rect = overlay.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-        overlay.style.setProperty('--mx', x + 'px');
-        overlay.style.setProperty('--my', y + 'px');
-      });
-    });
-  })();
-</script>
-
-<script>
-  // 卡片 stagger 入场动画
-  (function() {
-    var cards = document.querySelectorAll('.blg-card');
-    if (!cards.length) return;
-
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry, i) {
-        if (entry.isIntersecting) {
-          setTimeout(function() {
-            entry.target.classList.add('visible');
-          }, i * 80);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    cards.forEach(function(card) {
-      observer.observe(card);
-    });
-  })();
-</script>
-
 <script>
   // 骨架屏隐藏
   (function() {

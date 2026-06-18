@@ -1,0 +1,121 @@
+{
+  "title": "常用工具",
+  "subtitle": "值得常访的角落，数字世界里的邻居。",
+  "groups": [
+    {
+      "label": "常用工具",
+      "links": [
+        {
+          "name": "Astro",
+          "desc": "高性能静态站点框架",
+          "url": "https://astro.build"
+        },
+        {
+          "name": "CodePen",
+          "desc": "在线前端代码与分享",
+          "url": "https://codepen.io"
+        },
+        {
+          "name": "Dribbble",
+          "desc": "设计师作品展示社区",
+          "url": "https://dribbble.com"
+        },
+        {
+          "name": "GitHub",
+          "desc": "代码托管与协作平台",
+          "url": "https://github.com"
+        },
+        {
+          "name": "Unsplash",
+          "desc": "免费高分辨率图片库",
+          "url": "https://unsplash.com"
+        },
+        {
+          "name": "Vercel",
+          "desc": "前端部署与边缘计算",
+          "url": "https://vercel.com"
+        },
+        {
+          "name": "aconvert",
+          "desc": "文件转换",
+          "url": "https://www.aconvert.com"
+        },
+        {
+          "name": "vlogdownloader",
+          "desc": "在线视频解析工具",
+          "url": "https://pv.vlogdownloader.com/"
+        }
+      ]
+    },
+    {
+      "label": "学习资源",
+      "links": [
+        {
+          "name": "Can I Use",
+          "desc": "浏览器兼容性查询",
+          "url": "https://caniuse.com"
+        },
+        {
+          "name": "Coursera",
+          "desc": "在线课程平台",
+          "url": "https://coursera.org"
+        },
+        {
+          "name": "freeCodeCamp",
+          "desc": "免费编程学习",
+          "url": "https://freecodecamp.org"
+        },
+        {
+          "name": "LeetCode",
+          "desc": "算法与编程练习",
+          "url": "https://leetcode.com"
+        },
+        {
+          "name": "MDN",
+          "desc": "Web 开发权威文档",
+          "url": "https://developer.mozilla.org"
+        },
+        {
+          "name": "Stack Overflow",
+          "desc": "开发者问答社区",
+          "url": "https://stackoverflow.com"
+        }
+      ]
+    },
+    {
+      "label": "创意设计",
+      "links": [
+        {
+          "name": "Blush",
+          "desc": "可定制插画库",
+          "url": "https://blush.design"
+        },
+        {
+          "name": "Coolors",
+          "desc": "配色方案生成器",
+          "url": "https://coolors.co"
+        },
+        {
+          "name": "Figma",
+          "desc": "协作设计工具",
+          "url": "https://figma.com"
+        },
+        {
+          "name": "Framer",
+          "desc": "交互原型与建站",
+          "url": "https://framer.com"
+        },
+        {
+          "name": "Lottiefiles",
+          "desc": "动效素材平台",
+          "url": "https://lottiefiles.com"
+        },
+        {
+          "name": "Mobbin",
+          "desc": "UI 设计灵感库",
+          "url": "https://mobbin.com"
+        }
+      ]
+    }
+  ]
+}

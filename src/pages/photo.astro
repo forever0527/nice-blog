@@ -320,7 +320,7 @@ const poses = [
   }
 
   .photo-grid-section {
-    padding: 0 5vw 40px;
+    padding: 40px 5vw 120px;
     width: 100%;
     position: relative;
   }
@@ -381,13 +381,16 @@ const poses = [
     position: relative;
     min-height: 0;
     scroll-margin-top: 80px;
-    transition: transform 0.3s ease, opacity 0.6s ease var(--d, 0s);
     opacity: 0;
+    transform: translateY(30px) scale(0.97);
+    transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                transform 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s);
     text-decoration: none;
     display: block;
   }
   .photo-grid-item.mosaic-in {
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
   .photo-grid-item img {
@@ -580,7 +583,7 @@ const poses = [
 
   @media (max-width: 768px) {
     .desktop-layout { display: none; }
-    .mobile-layout { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+    .mobile-layout { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding-top: 24px; padding-bottom: 80px; }
 
     .cascade-stage {
       position: relative; width: 96vw; height: 400px;
@@ -633,16 +636,35 @@ const poses = [
     }
     .cascade-card.dimmed { filter: blur(3px); opacity: .4; pointer-events: none; }
 
+    .mobile-photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:420px; }
+    .mobile-photo-card { display:block; border-radius:14px; overflow:hidden; text-decoration:none; color:var(--text); background:transparent; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(120,120,120,0.5); box-shadow:3px 3px 8px var(--nav-edge); transition:transform 0.3s ease; }
+    :global([data-theme="dark"]) .mobile-photo-card { border-color:rgba(80,90,110,0.4); }
+    .mobile-photo-card:hover { transform:translateY(-2px); }
+    .mpc-img { height:140px; overflow:hidden; }
+    .mpc-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.4s ease; }
+    .mobile-photo-card:hover .mpc-img img { transform:scale(1.05); }
+    .mpc-info { padding:10px 12px 12px; }
+    .mpc-title { display:block; font-size:0.82rem; font-weight:600; margin-bottom:2px; }
+    .mpc-date { font-size:0.7rem; opacity:0.4; }
+
+    .photo-pager { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; }
+    .photo-pg-btn { width:34px; height:34px; border-radius:10px; border:none; background:none; color:var(--text); cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+    .photo-pg-btn:hover:not(:disabled) { background:rgba(128,128,128,0.08); }
+    .photo-pg-btn:disabled { opacity:0.2; cursor:default; }
+    .photo-pg-num { width:34px; height:34px; border-radius:10px; border:1px solid rgba(128,128,128,0.15); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.25s; }
+    .photo-pg-num:hover { background:rgba(128,128,128,0.1); }
+    .photo-pg-num.on { background:#0040ff; color:#fff; border-color:#0040ff; box-shadow:0 2px 12px rgba(0,64,255,0.3); }
+
     .cascade-overlay {
-      position: fixed; inset: 0; z-index: 90;
-      background: rgba(0,0,0,.35);
-      opacity: 0; pointer-events: none; transition: opacity .4s;
+      position: fixed; inset: 0; background: rgba(0,0,0,.6);
+      z-index: 90; opacity: 0; pointer-events: none; transition: opacity .3s;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     }
     .cascade-overlay.show { opacity: 1; pointer-events: auto; }
+
     .cascade-close {
-      position: fixed; top: 90px; right: 20px; z-index: 110;
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.25);
+      position: fixed; top: 16px; right: 16px; z-index: 101;
+      width: 36px; height: 36px; border-radius: 50%; border: none;
       background: rgba(0,0,0,.4); color: #fff;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;

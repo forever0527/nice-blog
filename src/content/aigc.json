@@ -1,0 +1,14 @@
+{
+  "subtitle": "算法与美学的交界地带。每一张都是与机器的一场沉默对谈。",
+  "works": [
+    { "src": "/img/bg/0-1.webp", "title": "虚空之瞳", "model": "Midjourney", "tag": "奇幻" },
+    { "src": "/img/bg/0-2.webp", "title": "赛博晨光", "model": "Stable Diffusion", "tag": "科幻" },
+    { "src": "/img/bg/0-3.webp", "title": "镜花水月", "model": "DALL·E", "tag": "概念" },
+    { "src": "/img/bg/0-4.webp", "title": "极光之森", "model": "Midjourney", "tag": "自然" },
+    { "src": "/img/bg/0-5.webp", "title": "霓虹暗涌", "model": "Stable Diffusion", "tag": "赛博" },
+    { "src": "/img/bg/0-6.webp", "title": "尘埃纪元", "model": "DALL·E", "tag": "末世" },
+    { "src": "/img/bg/1.webp", "title": "晨雾山峦", "model": "Midjourney", "tag": "写实" },
+    { "src": "/img/bg/2.webp", "title": "深海幽光", "model": "Stable Diffusion", "tag": "幻想" },
+    { "src": "/img/bg/3.webp", "title": "星环遗迹", "model": "DALL·E", "tag": "太空" }
+  ]
+}

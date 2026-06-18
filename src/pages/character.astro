@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Snow from '../components/Snow.astro';
+---
+
+<BaseLayout title="Character - 懒得取名">
+  <Snow />
+
+  <a class="char-logo" href="/">
+    <img src="/img/laa/long.webp" alt="Logo" />
+  </a>
+
+  <main class="character-page">
+    <div class="character-inner">
+      <div class="character-badge">Coming Soon</div>
+      <h1 class="character-title">关于这个角色</h1>
+      <p class="character-text">
+        每一个像素背后，都藏着一段故事。
+      </p>
+      <p class="character-text">
+        这个页面正在酝酿中，就像一杯刚冲好的咖啡，需要一点时间才能散发出最醇厚的香气。
+      </p>
+      <p class="character-text">
+        请稍后再来，届时你会看到一些有趣的东西。
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .char-logo {
+    position: fixed;
+    top: 30px;
+    left: 40px;
+    z-index: 100;
+    display: block;
+  }
+  .char-logo img {
+    height: 30px;
+    filter: brightness(0);
+    transition: filter 0.3s;
+  }
+  [data-theme="dark"] .char-logo img {
+    filter: brightness(0) invert(1);
+  }
+  @media (min-width: 768px) {
+    .char-logo { top: 40px; left: 50px; }
+    .char-logo img { height: 40px; }
+  }
+</style>
+
+<style>
+  .character-page {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(60px, 8vh, 120px) clamp(20px, 6vw, 80px);
+  }
+
+  .character-inner {
+    max-width: 600px;
+    text-align: center;
+  }
+
+  .character-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 50px;
+    background: rgba(0, 64, 255, 0.1);
+    color: #0040ff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  :global([data-theme="dark"]) .character-badge {
+    color: #4d8aff;
+    background: rgba(0, 64, 255, 0.15);
+  }
+
+  .character-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 32px;
+    line-height: 1.2;
+  }
+
+  .character-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text);
+    opacity: 0.6;
+    margin-bottom: 16px;
+  }
+</style>

@@ -1,0 +1,91 @@
+{
+  "subtitle": "写代码、做设计、玩学AI。相信工具决定边界，审美决定上限。",
+  "profile": {
+    "name": "True Blue",
+    "role": "全栈开发小白 / AI 探索小白",
+    "bio": "一个热爱创造的程序员。相信代码可以像诗歌一样优雅，设计可以像数学一样精确。目前在探索 AI 与前端技术的交汇点，用 Three.js 构建沉浸式的 Web 体验。这个博客记录我的学习、思考与作品。"
+  },
+  "stats": [
+    {
+      "num": "2＋",
+      "label": "年开发经验"
+    },
+    {
+      "num": "10+",
+      "label": "完成项目"
+    },
+    {
+      "num": "6",
+      "label": "技术栈"
+    },
+    {
+      "num": "∞",
+      "label": "好奇心"
+    }
+  ],
+  "skills": [
+    {
+      "name": "TypeScript",
+      "level": 90
+    },
+    {
+      "name": "React / Next.js",
+      "level": 85
+    },
+    {
+      "name": "Node.js",
+      "level": 80
+    },
+    {
+      "name": "Three.js / WebGL",
+      "level": 75
+    },
+    {
+      "name": "Python",
+      "level": 70
+    },
+    {
+      "name": "Figma",
+      "level": 63
+    }
+  ],
+  "timeline": [
+    {
+      "year": "2025",
+      "title": "独立开发者",
+      "desc": "探索 AI + 前端交叉领域，构建个人工具链。"
+    },
+    {
+      "year": "2024",
+      "title": "深入 WebGL",
+      "desc": "Three.js + GLSL 流体模拟与交互视觉。"
+    },
+    {
+      "year": "2023",
+      "title": "全栈之路",
+      "desc": "Node.js + 数据库 + SSR 完整闭环。"
+    },
+    {
+      "year": "2022",
+      "title": "前端入门",
+      "desc": "用 React 写出第一个完整博客。"
+    }
+  ],
+  "socials": [
+    {
+      "icon": "github",
+      "label": "GitHub",
+      "url": "https://github.com/forever0527"
+    },
+    {
+      "icon": "telegram",
+      "label": "Telegram",
+      "url": "https://t.me/Ang258258"
+    },
+    {
+      "icon": "video",
+      "label": "快手",
+      "url": "https://v.kuaishou.com/JxZnn7h3"
+    }
+  ]
+}

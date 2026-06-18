@@ -98,6 +98,15 @@ const navLinks = [
 <script>
   const htmlEl = document.documentElement;
 
+  // ===================== Logo 移到 body 下，脱离 #app =====================
+  const logoEl = document.getElementById('nav-logo-overlay');
+  if (logoEl) {
+    document.body.appendChild(logoEl);
+    if (!document.body.classList.contains('index-page')) {
+      logoEl.classList.add('logo-visible');
+    }
+  }
+
   // ===================== 主题切换 =====================
   function toggleTheme() {
     const next = htmlEl.dataset.theme === 'light' ? 'dark' : 'light';

@@ -1,0 +1,54 @@
+{
+  "name": "True Blue",
+  "subtitle": "很高兴和你相遇~\\(≧▽≦)/~",
+  "bio": "时间像一条河流载着我们顺流而下，遇到现实需要决策，但是我们无法停留 也无法回避，只能以最好的方式应对。你在 世界就在。",
+  "bgImage": "/img/bg/6.webp",
+  "bgList": [
+    "/img/bg/0-1.webp",
+    "/img/bg/0-2.webp",
+    "/img/bg/0-3.webp",
+    "/img/bg/0-4.webp",
+    "/img/bg/0-5.webp",
+    "/img/bg/0-6.webp",
+    "/img/bg/3.webp",
+    "/img/bg/4.webp"
+  ],
+  "socialLinks": [
+    {
+      "icon": "github",
+      "label": "GitHub",
+      "url": "https://github.com/forever0527"
+    },
+    {
+      "icon": "telegram",
+      "label": "Telegram",
+      "url": "https://t.me/Ang258258"
+    },
+    {
+      "icon": "video",
+      "label": "快手",
+      "url": "https://v.kuaishou.com/JxZnn7h3"
+    },
+    {
+      "icon": "tiktok",
+      "label": "抖音",
+      "url": "https://v.douyin.com/MjO6gtSelJQ/"
+    }
+  ],
+  "shopLinks": [
+    {
+      "label": "我不是卡神",
+      "url": "https://h5.lot-ml.com/ProductEn/Index/e00550774205a3f5"
+    },
+    {
+      "label": "卡布奇诺",
+      "url": "https://h5.gantanhao.com/?timestamp=1743511677638&from=3%40C%40%40FptD%3FCD%3F%3BGppD%3BBoBA%3BpDGA%3BBrsFtFsrGt%3Es3%40C%40%40"
+    }
+  ],
+  "footer": {
+    "heading": "About This Site",
+    "description": "致力于提供极致的交互体验。本站基于 Astro 构建。",
+    "startDate": "2025-10-31T12:00:00",
+    "version": "2.0.1"
+  }
+}

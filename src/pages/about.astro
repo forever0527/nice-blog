@@ -6,34 +6,14 @@ import FloatingButtons from '../components/FloatingButtons.astro';
 import Snow from '../components/Snow.astro';
 import Icon from '../components/Icon.astro';
 import HeroTitle from '../components/HeroTitle.astro';
+import aboutData from '../content/about.json';
 
-const stats = [
-  { num: '4+', label: '年开发经验' },
-  { num: '20+', label: '完成项目' },
-  { num: '6', label: '技术栈' },
-  { num: '∞', label: '好奇心' },
-];
-
-const skills = [
-  { name: 'TypeScript', level: 90 },
-  { name: 'React / Next.js', level: 85 },
-  { name: 'Node.js', level: 80 },
-  { name: 'Three.js / WebGL', level: 75 },
-  { name: 'Python', level: 70 },
-  { name: 'Figma', level: 65 },
-];
-
-const timeline = [
-  { year: '2025', title: '独立开发者', desc: '探索 AI + 前端交叉领域，构建个人工具链。' },
-  { year: '2024', title: '深入 WebGL', desc: 'Three.js + GLSL 流体模拟与交互视觉。' },
-  { year: '2023', title: '全栈之路', desc: 'Node.js + 数据库 + SSR 完整闭环。' },
-  { year: '2022', title: '前端入门', desc: '用 React 写出第一个完整博客。' },
-];
-
-const socials = [
-  { icon: 'github', label: 'GitHub', url: 'https://github.com/forever0527' },
-  { icon: 'telegram', label: 'Telegram', url: 'https://t.me/Ang258258' },
-];
+const stats = aboutData.stats;
+const skills = aboutData.skills;
+const timeline = aboutData.timeline;
+const socials = aboutData.socials;
+const profile = aboutData.profile;
+const subtitle = aboutData.subtitle;
 ---
 
 <BaseLayout title="About - 懒得取名">
@@ -41,17 +21,17 @@ const socials = [
   <Header />
 
   <main class="page">
-    <HeroTitle title="关于" subtitle="写代码、做设计、玩 AI。相信工具决定边界，审美决定上限。" />
+    <HeroTitle title="关于" subtitle={subtitle} />
 
     <!-- 个人卡片 -->
-    <section class="profile-card">
+    <section class="profile-card reveal" style="--i:0">
       <div class="profile-top">
 
         <div class="profile-info">
-          <h2 class="profile-name">True Blue</h2>
-          <p class="profile-role">全栈开发者 / AI 探索者</p>
+          <h2 class="profile-name">{profile.name}</h2>
+          <p class="profile-role">{profile.role}</p>
           <p class="profile-bio">
-            一个热爱创造的程序员。相信代码可以像诗歌一样优雅，设计可以像数学一样精确。目前在探索 AI 与前端技术的交汇点，用 Three.js 构建沉浸式的 Web 体验。这个博客记录我的学习、思考与作品。
+            {profile.bio}
           </p>
           <div class="profile-links">
             {socials.map(s => (
@@ -75,7 +55,7 @@ const socials = [
     </section>
 
     <!-- 技能 -->
-    <section class="skills-card">
+    <section class="skills-card reveal" style="--i:1">
       <h3 class="section-heading">技术栈</h3>
       <div class="skills-list">
         {skills.map(s => (
@@ -90,7 +70,7 @@ const socials = [
     </section>
 
     <!-- 时间线 -->
-    <section class="timeline-card">
+    <section class="timeline-card reveal" style="--i:2">
       <h3 class="section-heading">旅程</h3>
       <div class="timeline">
         {timeline.map((t, i) => (
@@ -117,7 +97,7 @@ const socials = [
     width: 100%;
     min-height: calc(100vh - 76px);
     background: transparent;
-    padding: 0 clamp(20px, 4vw, 48px) 120px;
+    padding: 40px clamp(20px, 4vw, 48px) 120px;
     max-width: 780px;
     margin: 0 auto;
   }
@@ -313,6 +293,7 @@ const socials = [
   .tl-desc { font-size: 0.8rem; color: var(--text); opacity: 0.4; line-height: 1.6; }
 
   @media (max-width: 768px) {
+    .page { padding: 24px 16px 80px; }
     .profile-top { flex-direction: column; align-items: center; text-align: center; }
     .profile-links { justify-content: center; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -321,5 +302,23 @@ const socials = [
 
   @media (prefers-reduced-motion: reduce) {
     .skill-fill { transition: none; }
+    .reveal { opacity:1; transform:none; transition:none; }
   }
+
+  /* Reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) calc(var(--i,0) * 0.1s),
+                transform 0.6s cubic-bezier(0.16,1,0.3,1) calc(var(--i,0) * 0.1s);
+  }
+  .reveal.visible { opacity:1; transform:translateY(0) scale(1); }
 </style>
+
+<script>
+  document.querySelectorAll('.reveal').forEach(function(el){
+    new IntersectionObserver(function(entries,obs){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+    },{threshold:0.08,rootMargin:'0px 0px -30px 0px'}).observe(el);
+  });
+</script>
