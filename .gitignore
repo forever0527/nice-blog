@@ -34,3 +34,9 @@ pnpm-debug.log*
 
 # Windows 系统临时文件
 Thumbs.db
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
